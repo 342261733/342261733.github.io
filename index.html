@@ -284,57 +284,8 @@
 <p> 父类：NSURLSessionManager，</p>
 <p> 子类：AFHTTPSessionManager</p>
 <p>父类NSURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。<br>子类AFHTTPSessionManager继承了所有父类的功能，在这个基础上封装了支持GET，POST，PUT，HEAD，PATCH，DELETE等HTTP请求方式，使用更加方便。当然不用子类，也是可以直接进行网络请求的。</p>
-<h1 id="NSURLSessionManager"><a href="#NSURLSessionManager" class="headerlink" title="NSURLSessionManager"></a>NSURLSessionManager</h1><h2 id="1）先看初始化方法"><a href="#1）先看初始化方法" class="headerlink" title="1）先看初始化方法"></a>1）先看初始化方法</h2><pre><code>- (instancetype)init {
-return [self initWithSessionConfiguration:nil];
-}
-
-- (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration {
-self = [super init];
-if (!self) {
-    return nil;
-}
-
-if (!configuration) {
-    configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-}
-
-self.sessionConfiguration = configuration;
-
-self.operationQueue = [[NSOperationQueue alloc] init];
-self.operationQueue.maxConcurrentOperationCount = 1; // 最大并发数量1，不允许并发？当前请求任务只能是一个。
-
-self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration delegate:self delegateQueue:self.operationQueue]; // 代理的设置在这里。我找的好苦啊
-
-self.responseSerializer = [AFJSONResponseSerializer serializer];
-
-self.securityPolicy = [AFSecurityPolicy defaultPolicy];
-
-#if !TARGET_OS_WATCH
-   self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];
-#endif
-
-   self.mutableTaskDelegatesKeyedByTaskIdentifier = [[NSMutableDictionary alloc] init];
-
-self.lock = [[NSLock alloc] init];
-self.lock.name = AFURLSessionManagerLockName;
-
-[self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-    for (NSURLSessionDataTask *task in dataTasks) {
-        [self addDelegateForDataTask:task uploadProgress:nil downloadProgress:nil completionHandler:nil];
-    }
-
-    for (NSURLSessionUploadTask *uploadTask in uploadTasks) {
-        [self addDelegateForUploadTask:uploadTask progress:nil completionHandler:nil];
-    }
-
-    for (NSURLSessionDownloadTask *downloadTask in downloadTasks) {
-        [self addDelegateForDownloadTask:downloadTask progress:nil destination:nil completionHandler:nil];
-    }
-}];
-
-return self;
-}
-</code></pre><p>这里对各个属性进行了基本的初始化，为session初始化：</p>
+<h1 id="NSURLSessionManager"><a href="#NSURLSessionManager" class="headerlink" title="NSURLSessionManager"></a>NSURLSessionManager</h1><h2 id="1）先看初始化方法"><a href="#1）先看初始化方法" class="headerlink" title="1）先看初始化方法"></a>1）先看初始化方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">  - (instancetype)init &#123;</div><div class="line">    return [self initWithSessionConfiguration:nil];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration &#123;</div><div class="line">    self = [super init];</div><div class="line">    if (!self) &#123;</div><div class="line">        return nil;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (!configuration) &#123;</div><div class="line">        configuration = [NSURLSessionConfiguration defaultSessionConfiguration];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    self.sessionConfiguration = configuration;</div><div class="line"></div><div class="line">    self.operationQueue = [[NSOperationQueue alloc] init];</div><div class="line">    self.operationQueue.maxConcurrentOperationCount = 1; // 最大并发数量1，不允许并发？当前请求任务只能是一个。</div><div class="line"></div><div class="line">    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration delegate:self delegateQueue:self.operationQueue]; // 代理的设置在这里。我找的好苦啊。。。</div><div class="line"></div><div class="line">    self.responseSerializer = [AFJSONResponseSerializer serializer];</div><div class="line"></div><div class="line">    self.securityPolicy = [AFSecurityPolicy defaultPolicy];</div><div class="line"></div><div class="line">#if !TARGET_OS_WATCH</div><div class="line">    self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];</div><div class="line">#endif</div><div class="line"></div><div class="line">    self.mutableTaskDelegatesKeyedByTaskIdentifier = [[NSMutableDictionary alloc] init];</div><div class="line"></div><div class="line">    self.lock = [[NSLock alloc] init];</div><div class="line">    self.lock.name = AFURLSessionManagerLockName;</div><div class="line"></div><div class="line">    [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) &#123;</div><div class="line">        for (NSURLSessionDataTask *task in dataTasks) &#123;</div><div class="line">            [self addDelegateForDataTask:task uploadProgress:nil downloadProgress:nil completionHandler:nil];</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        for (NSURLSessionUploadTask *uploadTask in uploadTasks) &#123;</div><div class="line">            [self addDelegateForUploadTask:uploadTask progress:nil completionHandler:nil];</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        for (NSURLSessionDownloadTask *downloadTask in downloadTasks) &#123;</div><div class="line">            [self addDelegateForDownloadTask:downloadTask progress:nil destination:nil completionHandler:nil];</div><div class="line">        &#125;</div><div class="line">    &#125;];</div><div class="line"></div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里对各个属性进行了基本的初始化，为session初始化：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self.session = [NSURLSessionsessionWithConfiguration:self.sessionConfigurationdelegate:selfdelegateQueue:self.operationQueue];</div></pre></td></tr></table></figure>
 <p>我们可以看到是用的系统NSURLSession的初始化方法。</p>
 <p>此处会遍历所有task添加delegate方法，猜测是兼容上次为未完成的请求Task，再继续进行处理，具体还得看情况，因为我跟了多次都是没有走这个方法。</p>
