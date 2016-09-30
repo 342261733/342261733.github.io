@@ -99,7 +99,7 @@ AFHTTPRequestSerializer,二进制格式（query字符串转换成二进制）
 AFJSO">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AFNetworking 3.0 源码解析之Serialization">
-<meta property="og:url" content="http://yoursite.com/2016/09/30/AFNetworking-3-0-源码解析之Serialization/index.html">
+<meta property="og:url" content="http://semyonxu.com/2016/09/30/AFNetworking-3-0-源码解析之Serialization/index.html">
 <meta property="og:site_name" content="Semyon Xu's Blog">
 <meta property="og:description" content="本部分主要的作用：网络通信信息序列化/反序列化
 AFURLRequestSerialization功能：负责参数转换成NSMutableURLRequest类型，进行网络请求。
@@ -115,7 +115,7 @@ AFHTTPRequestSerializer,二进制格式（query字符串转换成二进制）
 
 AFJSO">
 <meta property="og:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
-<meta property="og:updated_time" content="2016-09-30T07:47:32.000Z">
+<meta property="og:updated_time" content="2016-09-30T08:17:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AFNetworking 3.0 源码解析之Serialization">
 <meta name="twitter:description" content="本部分主要的作用：网络通信信息序列化/反序列化
@@ -152,7 +152,7 @@ AFJSO">
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/09/30/AFNetworking-3-0-源码解析之Serialization/"/>
+  <link rel="canonical" href="http://semyonxu.com/2016/09/30/AFNetworking-3-0-源码解析之Serialization/"/>
 
   <title> AFNetworking 3.0 源码解析之Serialization | Semyon Xu's Blog </title>
 </head>
@@ -391,7 +391,8 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p>子类：</p>
 <ul>
 <li>AFJSONRequestSerializer,Json格式（Json序列化成NSData类型）</li>
-<li>AFPropertyListRequestSerializer，Plist（一种特殊的XML，解析起来相对容易）</li>
+<li>AFPropertyListRequestSerializer，Plist（一种特殊的XML，解析起来相对容易）<a id="more"></a>
+</li>
 </ul>
 <h2 id="封装思路："><a href="#封装思路：" class="headerlink" title="封装思路："></a>封装思路：</h2><p>所有类遵循一个协议AFURLRequestSerialization，协议中一个非必须实现的方法：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (nullableNSURLRequest*)requestBySerializingRequest:(NSURLRequest*)request</div><div class="line">                                withParameters:(nullableid)parameters</div><div class="line">                                   error:(NSError* _Nullable__autoreleasing *)error NS_SWIFT_NOTHROW;</div></pre></td></tr></table></figure>
@@ -445,7 +446,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p>如果文中有什么错误，欢迎大家指正。</p>
 <p>更多问题讨论欢迎加QQ群：200792066</p>
 <p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
-<p>转载请注明出处：<a href="http://semyonxu.com" target="_blank" rel="external">http://semyonxu.com</a></p>
+<p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
 
       
     </div>
@@ -539,7 +540,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/09/30/AFNetworking-3-0-源码解析之Serialization/"
-           data-title="AFNetworking 3.0 源码解析之Serialization" data-url="http://yoursite.com/2016/09/30/AFNetworking-3-0-源码解析之Serialization/">
+           data-title="AFNetworking 3.0 源码解析之Serialization" data-url="http://semyonxu.com/2016/09/30/AFNetworking-3-0-源码解析之Serialization/">
       </div>
     
   </div>
@@ -632,15 +633,6 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
                 </a>
               </span>
             
-              <span class="links-of-author-item">
-                <a href="http://yamlee.me" target="_blank" title="友链">
-                  
-                    <i class="fa fa-fw fa-globe"></i>
-                  
-                  友链
-                </a>
-              </span>
-            
           
         </div>
 
@@ -648,6 +640,20 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
         
 
         
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://yamlee.me" title="友链" target="_blank">友链</a>
+                </li>
+              
+            </ul>
+          </div>
         
 
       </section>

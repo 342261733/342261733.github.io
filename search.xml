@@ -5,7 +5,7 @@
     
     <entry>
       <title><![CDATA[AFNetworking 3.0 源码解析之Serialization]]></title>
-      <url>http://yoursite.com/2016/09/30/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSerialization/</url>
+      <url>http://semyonxu.com/2016/09/30/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSerialization/</url>
       <content type="html"><![CDATA[<p>本部分主要的作用：网络通信信息序列化/反序列化</p>
 <h1 id="AFURLRequestSerialization"><a href="#AFURLRequestSerialization" class="headerlink" title="AFURLRequestSerialization"></a>AFURLRequestSerialization</h1><h2 id="功能："><a href="#功能：" class="headerlink" title="功能："></a>功能：</h2><p>负责参数转换成NSMutableURLRequest类型，进行网络请求。</p>
 <ol>
@@ -19,7 +19,8 @@
 <p>子类：</p>
 <ul>
 <li>AFJSONRequestSerializer,Json格式（Json序列化成NSData类型）</li>
-<li>AFPropertyListRequestSerializer，Plist（一种特殊的XML，解析起来相对容易）</li>
+<li>AFPropertyListRequestSerializer，Plist（一种特殊的XML，解析起来相对容易）<a id="more"></a>
+</li>
 </ul>
 <h2 id="封装思路："><a href="#封装思路：" class="headerlink" title="封装思路："></a>封装思路：</h2><p>所有类遵循一个协议AFURLRequestSerialization，协议中一个非必须实现的方法：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (nullableNSURLRequest*)requestBySerializingRequest:(NSURLRequest*)request</div><div class="line">                                withParameters:(nullableid)parameters</div><div class="line">                                   error:(NSError* _Nullable__autoreleasing *)error NS_SWIFT_NOTHROW;</div></pre></td></tr></table></figure>
@@ -73,16 +74,17 @@
 <p>如果文中有什么错误，欢迎大家指正。</p>
 <p>更多问题讨论欢迎加QQ群：200792066</p>
 <p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
-<p>转载请注明出处：<a href="http://semyonxu.com" target="_blank" rel="external">http://semyonxu.com</a></p>
+<p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
 ]]></content>
     </entry>
     
     <entry>
       <title><![CDATA[AFNetworking 3.0 源码解析之Reachability]]></title>
-      <url>http://yoursite.com/2016/09/30/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BReachability/</url>
+      <url>http://semyonxu.com/2016/09/30/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BReachability/</url>
       <content type="html"><![CDATA[<p>Reachability这部分主要负责网络的状态网络状态的监听。</p>
 <h1 id="首先介绍下使用方法。"><a href="#首先介绍下使用方法。" class="headerlink" title="首先介绍下使用方法。"></a>首先介绍下使用方法。</h1><p>这里介绍三种使用方法：</p>
 <h2 id="直接使用单利，调用"><a href="#直接使用单利，调用" class="headerlink" title="直接使用单利，调用"></a>直接使用单利，调用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];</div><div class="line">[reachabilityManager startMonitoring];</div><div class="line">[reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">    NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">&#125;];</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <h2 id="使用AFURLSessionManager的属性调用"><a href="#使用AFURLSessionManager的属性调用" class="headerlink" title="使用AFURLSessionManager的属性调用"></a>使用AFURLSessionManager的属性调用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:@&quot;https://www.baidu.com&quot;] sessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];</div><div class="line">  sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];</div><div class="line">  [sessionManager.reachabilityManager startMonitoring];</div><div class="line">  [sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">      NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">  &#125;];</div></pre></td></tr></table></figure>
 <h2 id="使用通知中心的模式，监听"><a href="#使用通知中心的模式，监听" class="headerlink" title="使用通知中心的模式，监听"></a>使用通知中心的模式，监听</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityCallBack:) name:AFNetworkingReachabilityDidChangeNotification object:nil];</div><div class="line"></div><div class="line"></div><div class="line">- (void)reachabilityCallBack:(NSNotification *)sender &#123;</div><div class="line">    NSDictionary *userInfo = sender.userInfo;</div><div class="line">    AFNetworkReachabilityStatus netStatus = [userInfo[@&quot;AFNetworkingReachabilityNotificationStatusItem&quot;] integerValue];</div><div class="line">    NSLog(@&quot;netStatus %ld &quot;, netStatus);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>使用方法还是比较简单的。</p>
@@ -111,16 +113,16 @@
 <p>基本就是这些了，如果文中有什么错误，欢迎大家指正。</p>
 <p>更多问题讨论欢迎加QQ群：200792066</p>
 <p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
-<p>转载请注明出处：<a href="http://semyonxu.com" target="_blank" rel="external">http://semyonxu.com</a></p>
+<p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
 ]]></content>
     </entry>
     
     <entry>
       <title><![CDATA[AFNetworking 3.0 源码解析之NSURLSession]]></title>
-      <url>http://yoursite.com/2016/09/28/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BNSURLSession/</url>
+      <url>http://semyonxu.com/2016/09/28/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BNSURLSession/</url>
       <content type="html"><![CDATA[<p>NSURLSession是AFNetworking的核心部分，主要负责网络通信部分。</p>
 <p>下面分两个部分来解析：<br> 父类：NSURLSessionManager，<br> 子类：AFHTTPSessionManager</p>
-<p>父类NSURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。<br>子类AFHTTPSessionManager继承了所有父类的功能，在这个基础上封装了支持GET，POST，PUT，HEAD，PATCH，DELETE等HTTP请求方式，使用更加方便。当然不用子类，也是可以直接进行网络请求的。</p>
+<p>父类NSURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。<br>子类AFHTTPSessionManager继承了所有父类的功能，在这个基础上封装了支持GET，POST，PUT，HEAD，PATCH，DELETE等HTTP请求方式，使用更加方便。当然不用子类，也是可以直接进行网络请求的。<br><a id="more"></a></p>
 <h1 id="NSURLSessionManager"><a href="#NSURLSessionManager" class="headerlink" title="NSURLSessionManager"></a>NSURLSessionManager</h1><h2 id="先看初始化方法"><a href="#先看初始化方法" class="headerlink" title="先看初始化方法"></a>先看初始化方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">  - (instancetype)init &#123;</div><div class="line">    return [self initWithSessionConfiguration:nil];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration &#123;</div><div class="line">    self = [super init];</div><div class="line">    if (!self) &#123;</div><div class="line">        return nil;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (!configuration) &#123;</div><div class="line">        configuration = [NSURLSessionConfiguration defaultSessionConfiguration];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    self.sessionConfiguration = configuration;</div><div class="line"></div><div class="line">    self.operationQueue = [[NSOperationQueue alloc] init];</div><div class="line">    self.operationQueue.maxConcurrentOperationCount = 1; // 最大并发数量1，不允许并发？当前请求任务只能是一个。</div><div class="line"></div><div class="line">    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration delegate:self delegateQueue:self.operationQueue]; // 代理的设置在这里。我找的好苦啊。。。</div><div class="line"></div><div class="line">    self.responseSerializer = [AFJSONResponseSerializer serializer];</div><div class="line"></div><div class="line">    self.securityPolicy = [AFSecurityPolicy defaultPolicy];</div><div class="line"></div><div class="line">#if !TARGET_OS_WATCH</div><div class="line">    self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];</div><div class="line">#endif</div><div class="line"></div><div class="line">    self.mutableTaskDelegatesKeyedByTaskIdentifier = [[NSMutableDictionary alloc] init];</div><div class="line"></div><div class="line">    self.lock = [[NSLock alloc] init];</div><div class="line">    self.lock.name = AFURLSessionManagerLockName;</div><div class="line"></div><div class="line">    [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) &#123;</div><div class="line">        for (NSURLSessionDataTask *task in dataTasks) &#123;</div><div class="line">            [self addDelegateForDataTask:task uploadProgress:nil downloadProgress:nil completionHandler:nil];</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        for (NSURLSessionUploadTask *uploadTask in uploadTasks) &#123;</div><div class="line">            [self addDelegateForUploadTask:uploadTask progress:nil completionHandler:nil];</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        for (NSURLSessionDownloadTask *downloadTask in downloadTasks) &#123;</div><div class="line">            [self addDelegateForDownloadTask:downloadTask progress:nil destination:nil completionHandler:nil];</div><div class="line">        &#125;</div><div class="line">    &#125;];</div><div class="line"></div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这里对各个属性进行了基本的初始化，为session初始化：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">self.session = [NSURLSessionsessionWithConfiguration:self.sessionConfigurationdelegate:selfdelegateQueue:self.operationQueue];</div></pre></td></tr></table></figure>
@@ -176,7 +178,7 @@
 <p>如果文中有什么错误，欢迎指正。</p>
 <p>更多问题讨论欢迎加QQ群：200792066</p>
 <p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
-<p>转载请注明出处：<a href="http://semyonxu.com" target="_blank" rel="external">http://semyonxu.com</a></p>
+<p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
 ]]></content>
     </entry>
     
