@@ -1,0 +1,984 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="AFNetworking,AFNetworking 3.0,源码解析,AFNetworking 3.0 源码解析之Reachability," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Reachability这部分主要负责网络的状态网络状态的监听。
+首先介绍下使用方法。这里介绍三种使用方法：
+直接使用单利，调用12345AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];[reachabilityManager startMonitori">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFNetworking 3.0 源码解析之Reachability">
+<meta property="og:url" content="http://yoursite.com/2016/09/30/AFNetworking-3-0-源码解析之Reachability/index.html">
+<meta property="og:site_name" content="Semyon Xu's Blog">
+<meta property="og:description" content="Reachability这部分主要负责网络的状态网络状态的监听。
+首先介绍下使用方法。这里介绍三种使用方法：
+直接使用单利，调用12345AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];[reachabilityManager startMonitori">
+<meta property="og:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
+<meta property="og:updated_time" content="2016-09-30T07:18:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AFNetworking 3.0 源码解析之Reachability">
+<meta name="twitter:description" content="Reachability这部分主要负责网络的状态网络状态的监听。
+首先介绍下使用方法。这里介绍三种使用方法：
+直接使用单利，调用12345AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];[reachabilityManager startMonitori">
+<meta name="twitter:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/09/30/AFNetworking-3-0-源码解析之Reachability/"/>
+
+  <title> AFNetworking 3.0 源码解析之Reachability | Semyon Xu's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Semyon Xu's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+(function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+(w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+})(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+_st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                AFNetworking 3.0 源码解析之Reachability
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-30T15:06:41+08:00" content="2016-09-30">
+              2016-09-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS开发</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/30/AFNetworking-3-0-源码解析之Reachability/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/" class="leancloud_visitors" data-flag-title="AFNetworking 3.0 源码解析之Reachability">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Reachability这部分主要负责网络的状态网络状态的监听。</p>
+<h1 id="首先介绍下使用方法。"><a href="#首先介绍下使用方法。" class="headerlink" title="首先介绍下使用方法。"></a>首先介绍下使用方法。</h1><p>这里介绍三种使用方法：</p>
+<h3 id="直接使用单利，调用"><a href="#直接使用单利，调用" class="headerlink" title="直接使用单利，调用"></a>直接使用单利，调用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];</div><div class="line">[reachabilityManager startMonitoring];</div><div class="line">[reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">    NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">&#125;];</div></pre></td></tr></table></figure>
+<h3 id="使用AFURLSessionManager的属性调用"><a href="#使用AFURLSessionManager的属性调用" class="headerlink" title="使用AFURLSessionManager的属性调用"></a>使用AFURLSessionManager的属性调用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:@&quot;https://www.baidu.com&quot;] sessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];</div><div class="line">  sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];</div><div class="line">  [sessionManager.reachabilityManager startMonitoring];</div><div class="line">  [sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">      NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">  &#125;];</div></pre></td></tr></table></figure>
+<h3 id="使用通知中心的模式，监听"><a href="#使用通知中心的模式，监听" class="headerlink" title="使用通知中心的模式，监听"></a>使用通知中心的模式，监听</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityCallBack:) name:AFNetworkingReachabilityDidChangeNotification object:nil];</div><div class="line"></div><div class="line"></div><div class="line">- (void)reachabilityCallBack:(NSNotification *)sender &#123;</div><div class="line">    NSDictionary *userInfo = sender.userInfo;</div><div class="line">    AFNetworkReachabilityStatus netStatus = [userInfo[@&quot;AFNetworkingReachabilityNotificationStatusItem&quot;] integerValue];</div><div class="line">    NSLog(@&quot;netStatus %ld &quot;, netStatus);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用方法还是比较简单的。</p>
+<h1 id="下面分析下源码。"><a href="#下面分析下源码。" class="headerlink" title="下面分析下源码。"></a>下面分析下源码。</h1><h2 id="初始化网络监听"><a href="#初始化网络监听" class="headerlink" title="初始化网络监听"></a>初始化网络监听</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)sharedManager;</div><div class="line"></div><div class="line">+ (instancetype)manager;</div><div class="line"></div><div class="line">+ (instancetype)managerForDomain:(NSString *)domain;</div><div class="line"></div><div class="line">+ (instancetype)managerForAddress:(const void *)address;</div><div class="line"></div><div class="line">- (instancetype)initWithReachability:(SCNetworkReachabilityRef)reachability NS_DESIGNATED_INITIALIZER;</div></pre></td></tr></table></figure>
+<p>以上均是初始化方法，我们可以直接用单利模式，比较方便的进行初始化对象，也可以直接用manager，建议还是用单利，因为单利里面也是调用的manager：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)sharedManager &#123;</div><div class="line">    static AFNetworkReachabilityManager *_sharedManager = nil;</div><div class="line">    static dispatch_once_t onceToken;</div><div class="line">    dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">        _sharedManager = [self manager];</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    return _sharedManager;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>manager是直接使用的managerForAdress方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)manager</div><div class="line">&#123;</div><div class="line">#if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) &amp;&amp; __IPHONE_OS_VERSION_MIN_REQUIRED &gt;= 90000) || (defined(__MAC_OS_X_VERSION_MIN_REQUIRED) &amp;&amp; __MAC_OS_X_VERSION_MIN_REQUIRED &gt;= 101100)</div><div class="line">    struct sockaddr_in6 address;</div><div class="line">    bzero(&amp;address, sizeof(address));</div><div class="line">    address.sin6_len = sizeof(address);</div><div class="line">    address.sin6_family = AF_INET6;</div><div class="line">#else</div><div class="line">    struct sockaddr_in address;</div><div class="line">    bzero(&amp;address, sizeof(address));</div><div class="line">    address.sin_len = sizeof(address);</div><div class="line">    address.sin_family = AF_INET;</div><div class="line">#endif</div><div class="line">    return [self managerForAddress:&amp;address];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当然我们也可以使用初始化domain的方法，然后转换成SCNetworkReachabilityRef对象，进行初始化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)managerForDomain:(NSString *)domain &#123;</div><div class="line">    SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, [domain UTF8String]);</div><div class="line"></div><div class="line">    AFNetworkReachabilityManager *manager = [[self alloc] initWithReachability:reachability];</div><div class="line">    </div><div class="line">    CFRelease(reachability);</div><div class="line"></div><div class="line">    return manager;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 初始化方法里面只是做了一个retain，和初始化网络状态，目测SCNetworkReachabilityRef是不支持自动内存管理的。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">- (instancetype)initWithReachability:(SCNetworkReachabilityRef)reachability &#123;</div><div class="line">    self = [super init];</div><div class="line">    if (!self) &#123;</div><div class="line">        return nil;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    _networkReachability = CFRetain(reachability);</div><div class="line">    self.networkReachabilityStatus = AFNetworkReachabilityStatusUnknown;</div><div class="line"></div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="开始监听网络状态"><a href="#开始监听网络状态" class="headerlink" title="开始监听网络状态"></a>开始监听网络状态</h2><p>我们之间调用startMonitoring方法，进行开始网络状态的监控：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">- (void)startMonitoring &#123;</div><div class="line">    [self stopMonitoring];</div><div class="line"></div><div class="line">    if (!self.networkReachability) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    __weak __typeof(self)weakSelf = self;</div><div class="line">    AFNetworkReachabilityStatusBlock callback = ^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">        __strong __typeof(weakSelf)strongSelf = weakSelf;</div><div class="line"></div><div class="line">        strongSelf.networkReachabilityStatus = status;</div><div class="line">        if (strongSelf.networkReachabilityStatusBlock) &#123;</div><div class="line">            strongSelf.networkReachabilityStatusBlock(status);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    SCNetworkReachabilityContext context = &#123;0, (__bridge void *)callback, AFNetworkReachabilityRetainCallback, AFNetworkReachabilityReleaseCallback, NULL&#125;;</div><div class="line">    SCNetworkReachabilitySetCallback(self.networkReachability, AFNetworkReachabilityCallback, &amp;context);</div><div class="line">    SCNetworkReachabilityScheduleWithRunLoop(self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);</div><div class="line"></div><div class="line">    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),^&#123;</div><div class="line">        SCNetworkReachabilityFlags flags;</div><div class="line">        if (SCNetworkReachabilityGetFlags(self.networkReachability, &amp;flags)) &#123;</div><div class="line">            AFPostReachabilityStatusChange(flags, callback);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用方法比较简单，此处我们可以看到，做了数据保护工作，如果没有初始化会return，首先先stopMonitoring，这样做可以避免生成多个监听网络的对象，导致收到多个成功的回调。<br>然后是一个网络状态捕获到的回调。<br>下面才是使用的SystemConfiguration框架下的SCNetworkReachability的API来做的处理，使用也比较简单，先初始化，然后设置回调block，再对回调的C数据转换成网络状态的枚举类型，最后放到了RunLoop里面，设置到了主RunLoop，并设置model为CommonModes，CommonModes就是普通的和事件处理Mode的集合，不清楚的可以去看RunLoop相关文档。</p>
+<h2 id="结束监听网络状态"><a href="#结束监听网络状态" class="headerlink" title="结束监听网络状态"></a>结束监听网络状态</h2><p>结束也比较简单，当然，我们可以自己调用，也可以不调用。因为在类销毁的时候，dealloc中也调用了这个方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- (void)stopMonitoring &#123;</div><div class="line">    if (!self.networkReachability) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    SCNetworkReachabilityUnscheduleFromRunLoop(self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再看一下网络状态的枚举，也就是我们可以捕获到的网络状态有哪些：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">typedef NS_ENUM(NSInteger, AFNetworkReachabilityStatus) &#123;</div><div class="line">    AFNetworkReachabilityStatusUnknown          = -1,</div><div class="line">    AFNetworkReachabilityStatusNotReachable     = 0,</div><div class="line">    AFNetworkReachabilityStatusReachableViaWWAN = 1,</div><div class="line">    AFNetworkReachabilityStatusReachableViaWiFi = 2,</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>默认是Unknown未知，然后是网络不可达，无线广域网链接，WiFi链接，此处没有区分2G/3G/4G,所以需要使用的小伙伴还得自行处理。</p>
+<p>当然AF也为我们提供了获取的属性方法，我们可以直接调用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@property (readonly, nonatomic, assign, getter = isReachable) BOOL reachable;</div><div class="line"></div><div class="line">/**</div><div class="line"> Whether or not the network is currently reachable via WWAN.</div><div class="line"> */</div><div class="line">@property (readonly, nonatomic, assign, getter = isReachableViaWWAN) BOOL reachableViaWWAN;</div><div class="line"></div><div class="line">/**</div><div class="line"> Whether or not the network is currently reachable via WiFi.</div><div class="line"> */</div><div class="line">@property (readonly, nonatomic, assign, getter = isReachableViaWiFi) BOOL reachableViaWiFi;</div></pre></td></tr></table></figure>
+<p>实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">- (BOOL)isReachable &#123;</div><div class="line">    return [self isReachableViaWWAN] || [self isReachableViaWiFi];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (BOOL)isReachableViaWWAN &#123;</div><div class="line">    return self.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (BOOL)isReachableViaWiFi &#123;</div><div class="line">    return self.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们可以看到，我们可以拿到网络是不是可达，当前是不是状态WWAN，WiFi。使用比较方便。</p>
+<p>基本就是这些了，如果文中有什么错误，欢迎大家指正。</p>
+<p>更多问题讨论欢迎加QQ群：200792066</p>
+<p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
+<p>转载请注明出处：<a href="http://semyonxu.com" target="_blank" rel="external">http://semyonxu.com</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/AFNetworking/" rel="tag">#AFNetworking</a>
+          
+            <a href="/tags/AFNetworking-3-0/" rel="tag">#AFNetworking 3.0</a>
+          
+            <a href="/tags/源码解析/" rel="tag">#源码解析</a>
+          
+            <a href="/tags/AFNetworking-3-0-源码解析之Reachability/" rel="tag">#AFNetworking 3.0 源码解析之Reachability</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/" rel="next" title="AFNetworking 3.0 源码解析之NSURLSession">
+                <i class="fa fa-chevron-left"></i> AFNetworking 3.0 源码解析之NSURLSession
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/09/30/AFNetworking-3-0-源码解析之Reachability/"
+           data-title="AFNetworking 3.0 源码解析之Reachability" data-url="http://yoursite.com/2016/09/30/AFNetworking-3-0-源码解析之Reachability/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/weixinicon.jpg"
+               alt="Semyon Xu" />
+          <p class="site-author-name" itemprop="name">Semyon Xu</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/342261733" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/Ifonly_Semyon" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://yamlee.me" target="_blank" title="友链">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  友链
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#首先介绍下使用方法。"><span class="nav-number">1.</span> <span class="nav-text">首先介绍下使用方法。</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#直接使用单利，调用"><span class="nav-number">1.0.1.</span> <span class="nav-text">直接使用单利，调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用AFURLSessionManager的属性调用"><span class="nav-number">1.0.2.</span> <span class="nav-text">使用AFURLSessionManager的属性调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用通知中心的模式，监听"><span class="nav-number">1.0.3.</span> <span class="nav-text">使用通知中心的模式，监听</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#下面分析下源码。"><span class="nav-number">2.</span> <span class="nav-text">下面分析下源码。</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化网络监听"><span class="nav-number">2.1.</span> <span class="nav-text">初始化网络监听</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始监听网络状态"><span class="nav-number">2.2.</span> <span class="nav-text">开始监听网络状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束监听网络状态"><span class="nav-number">2.3.</span> <span class="nav-text">结束监听网络状态</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Semyon Xu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"semyonxu"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("xEwD41N6oVgusoO66QjQALp3-gzGzoHsz", "i1Yhoudavlb8XrSapRPEjCnz");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>

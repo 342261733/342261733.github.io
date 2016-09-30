@@ -264,6 +264,166 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
             
               
                 
+                <a class="post-title-link" href="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/" itemprop="url">
+                  AFNetworking 3.0 源码解析之Reachability
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-30T15:06:41+08:00" content="2016-09-30">
+              2016-09-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS开发</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/30/AFNetworking-3-0-源码解析之Reachability/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/" class="leancloud_visitors" data-flag-title="AFNetworking 3.0 源码解析之Reachability">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Reachability这部分主要负责网络的状态网络状态的监听。</p>
+<h1 id="首先介绍下使用方法。"><a href="#首先介绍下使用方法。" class="headerlink" title="首先介绍下使用方法。"></a>首先介绍下使用方法。</h1><p>这里介绍三种使用方法：</p>
+<h3 id="直接使用单利，调用"><a href="#直接使用单利，调用" class="headerlink" title="直接使用单利，调用"></a>直接使用单利，调用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];</div><div class="line">[reachabilityManager startMonitoring];</div><div class="line">[reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">    NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">&#125;];</div></pre></td></tr></table></figure>
+<h3 id="使用AFURLSessionManager的属性调用"><a href="#使用AFURLSessionManager的属性调用" class="headerlink" title="使用AFURLSessionManager的属性调用"></a>使用AFURLSessionManager的属性调用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:@&quot;https://www.baidu.com&quot;] sessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];</div><div class="line">  sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];</div><div class="line">  [sessionManager.reachabilityManager startMonitoring];</div><div class="line">  [sessionManager.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">      NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">  &#125;];</div></pre></td></tr></table></figure>
+<h3 id="使用通知中心的模式，监听"><a href="#使用通知中心的模式，监听" class="headerlink" title="使用通知中心的模式，监听"></a>使用通知中心的模式，监听</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityCallBack:) name:AFNetworkingReachabilityDidChangeNotification object:nil];</div><div class="line"></div><div class="line"></div><div class="line">- (void)reachabilityCallBack:(NSNotification *)sender &#123;</div><div class="line">    NSDictionary *userInfo = sender.userInfo;</div><div class="line">    AFNetworkReachabilityStatus netStatus = [userInfo[@&quot;AFNetworkingReachabilityNotificationStatusItem&quot;] integerValue];</div><div class="line">    NSLog(@&quot;netStatus %ld &quot;, netStatus);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用方法还是比较简单的。</p>
+<h1 id="下面分析下源码。"><a href="#下面分析下源码。" class="headerlink" title="下面分析下源码。"></a>下面分析下源码。</h1><h2 id="初始化网络监听"><a href="#初始化网络监听" class="headerlink" title="初始化网络监听"></a>初始化网络监听</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)sharedManager;</div><div class="line"></div><div class="line">+ (instancetype)manager;</div><div class="line"></div><div class="line">+ (instancetype)managerForDomain:(NSString *)domain;</div><div class="line"></div><div class="line">+ (instancetype)managerForAddress:(const void *)address;</div><div class="line"></div><div class="line">- (instancetype)initWithReachability:(SCNetworkReachabilityRef)reachability NS_DESIGNATED_INITIALIZER;</div></pre></td></tr></table></figure>
+<p>以上均是初始化方法，我们可以直接用单利模式，比较方便的进行初始化对象，也可以直接用manager，建议还是用单利，因为单利里面也是调用的manager：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)sharedManager &#123;</div><div class="line">    static AFNetworkReachabilityManager *_sharedManager = nil;</div><div class="line">    static dispatch_once_t onceToken;</div><div class="line">    dispatch_once(&amp;onceToken, ^&#123;</div><div class="line">        _sharedManager = [self manager];</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    return _sharedManager;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>manager是直接使用的managerForAdress方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)manager</div><div class="line">&#123;</div><div class="line">#if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) &amp;&amp; __IPHONE_OS_VERSION_MIN_REQUIRED &gt;= 90000) || (defined(__MAC_OS_X_VERSION_MIN_REQUIRED) &amp;&amp; __MAC_OS_X_VERSION_MIN_REQUIRED &gt;= 101100)</div><div class="line">    struct sockaddr_in6 address;</div><div class="line">    bzero(&amp;address, sizeof(address));</div><div class="line">    address.sin6_len = sizeof(address);</div><div class="line">    address.sin6_family = AF_INET6;</div><div class="line">#else</div><div class="line">    struct sockaddr_in address;</div><div class="line">    bzero(&amp;address, sizeof(address));</div><div class="line">    address.sin_len = sizeof(address);</div><div class="line">    address.sin_family = AF_INET;</div><div class="line">#endif</div><div class="line">    return [self managerForAddress:&amp;address];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当然我们也可以使用初始化domain的方法，然后转换成SCNetworkReachabilityRef对象，进行初始化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">+ (instancetype)managerForDomain:(NSString *)domain &#123;</div><div class="line">    SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, [domain UTF8String]);</div><div class="line"></div><div class="line">    AFNetworkReachabilityManager *manager = [[self alloc] initWithReachability:reachability];</div><div class="line">    </div><div class="line">    CFRelease(reachability);</div><div class="line"></div><div class="line">    return manager;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 初始化方法里面只是做了一个retain，和初始化网络状态，目测SCNetworkReachabilityRef是不支持自动内存管理的。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">- (instancetype)initWithReachability:(SCNetworkReachabilityRef)reachability &#123;</div><div class="line">    self = [super init];</div><div class="line">    if (!self) &#123;</div><div class="line">        return nil;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    _networkReachability = CFRetain(reachability);</div><div class="line">    self.networkReachabilityStatus = AFNetworkReachabilityStatusUnknown;</div><div class="line"></div><div class="line">    return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="开始监听网络状态"><a href="#开始监听网络状态" class="headerlink" title="开始监听网络状态"></a>开始监听网络状态</h2><p>我们之间调用startMonitoring方法，进行开始网络状态的监控：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">- (void)startMonitoring &#123;</div><div class="line">    [self stopMonitoring];</div><div class="line"></div><div class="line">    if (!self.networkReachability) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    __weak __typeof(self)weakSelf = self;</div><div class="line">    AFNetworkReachabilityStatusBlock callback = ^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">        __strong __typeof(weakSelf)strongSelf = weakSelf;</div><div class="line"></div><div class="line">        strongSelf.networkReachabilityStatus = status;</div><div class="line">        if (strongSelf.networkReachabilityStatusBlock) &#123;</div><div class="line">            strongSelf.networkReachabilityStatusBlock(status);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    SCNetworkReachabilityContext context = &#123;0, (__bridge void *)callback, AFNetworkReachabilityRetainCallback, AFNetworkReachabilityReleaseCallback, NULL&#125;;</div><div class="line">    SCNetworkReachabilitySetCallback(self.networkReachability, AFNetworkReachabilityCallback, &amp;context);</div><div class="line">    SCNetworkReachabilityScheduleWithRunLoop(self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);</div><div class="line"></div><div class="line">    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),^&#123;</div><div class="line">        SCNetworkReachabilityFlags flags;</div><div class="line">        if (SCNetworkReachabilityGetFlags(self.networkReachability, &amp;flags)) &#123;</div><div class="line">            AFPostReachabilityStatusChange(flags, callback);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用方法比较简单，此处我们可以看到，做了数据保护工作，如果没有初始化会return，首先先stopMonitoring，这样做可以避免生成多个监听网络的对象，导致收到多个成功的回调。<br>然后是一个网络状态捕获到的回调。<br>下面才是使用的SystemConfiguration框架下的SCNetworkReachability的API来做的处理，使用也比较简单，先初始化，然后设置回调block，再对回调的C数据转换成网络状态的枚举类型，最后放到了RunLoop里面，设置到了主RunLoop，并设置model为CommonModes，CommonModes就是普通的和事件处理Mode的集合，不清楚的可以去看RunLoop相关文档。</p>
+<h2 id="结束监听网络状态"><a href="#结束监听网络状态" class="headerlink" title="结束监听网络状态"></a>结束监听网络状态</h2><p>结束也比较简单，当然，我们可以自己调用，也可以不调用。因为在类销毁的时候，dealloc中也调用了这个方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- (void)stopMonitoring &#123;</div><div class="line">    if (!self.networkReachability) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    SCNetworkReachabilityUnscheduleFromRunLoop(self.networkReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再看一下网络状态的枚举，也就是我们可以捕获到的网络状态有哪些：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">typedef NS_ENUM(NSInteger, AFNetworkReachabilityStatus) &#123;</div><div class="line">    AFNetworkReachabilityStatusUnknown          = -1,</div><div class="line">    AFNetworkReachabilityStatusNotReachable     = 0,</div><div class="line">    AFNetworkReachabilityStatusReachableViaWWAN = 1,</div><div class="line">    AFNetworkReachabilityStatusReachableViaWiFi = 2,</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>默认是Unknown未知，然后是网络不可达，无线广域网链接，WiFi链接，此处没有区分2G/3G/4G,所以需要使用的小伙伴还得自行处理。</p>
+<p>当然AF也为我们提供了获取的属性方法，我们可以直接调用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@property (readonly, nonatomic, assign, getter = isReachable) BOOL reachable;</div><div class="line"></div><div class="line">/**</div><div class="line"> Whether or not the network is currently reachable via WWAN.</div><div class="line"> */</div><div class="line">@property (readonly, nonatomic, assign, getter = isReachableViaWWAN) BOOL reachableViaWWAN;</div><div class="line"></div><div class="line">/**</div><div class="line"> Whether or not the network is currently reachable via WiFi.</div><div class="line"> */</div><div class="line">@property (readonly, nonatomic, assign, getter = isReachableViaWiFi) BOOL reachableViaWiFi;</div></pre></td></tr></table></figure>
+<p>实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">- (BOOL)isReachable &#123;</div><div class="line">    return [self isReachableViaWWAN] || [self isReachableViaWiFi];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (BOOL)isReachableViaWWAN &#123;</div><div class="line">    return self.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWWAN;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (BOOL)isReachableViaWiFi &#123;</div><div class="line">    return self.networkReachabilityStatus == AFNetworkReachabilityStatusReachableViaWiFi;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们可以看到，我们可以拿到网络是不是可达，当前是不是状态WWAN，WiFi。使用比较方便。</p>
+<p>基本就是这些了，如果文中有什么错误，欢迎大家指正。</p>
+<p>更多问题讨论欢迎加QQ群：200792066</p>
+<p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
+<p>转载请注明出处：<a href="http://semyonxu.com" target="_blank" rel="external">http://semyonxu.com</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/" itemprop="url">
                   AFNetworking 3.0 源码解析之NSURLSession
                 </a>
@@ -471,7 +631,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -488,7 +648,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
