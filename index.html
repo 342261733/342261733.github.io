@@ -620,8 +620,8 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
       
         
           <p>NSURLSession是AFNetworking的核心部分，主要负责网络通信部分。</p>
-<p>下面分两个部分来解析：<br> 父类：NSURLSessionManager，<br> 子类：AFHTTPSessionManager</p>
-<p>父类NSURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。<br>子类AFHTTPSessionManager继承了所有父类的功能，在这个基础上封装了支持GET，POST，PUT，HEAD，PATCH，DELETE等HTTP请求方式，使用更加方便。当然不用子类，也是可以直接进行网络请求的。<br>
+<p>下面分两个部分来解析：<br> 父类：AFURLSessionManager，<br> 子类：AFHTTPSessionManager</p>
+<p>父类AFURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。<br>子类AFHTTPSessionManager继承了所有父类的功能，在这个基础上封装了支持GET，POST，PUT，HEAD，PATCH，DELETE等HTTP请求方式，使用更加方便。当然不用子类，也是可以直接进行网络请求的。<br>
           <div class="post-more-link text-center">
             <a class="btn" href="/2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/#more" rel="contents">
               阅读全文 &raquo;
