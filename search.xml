@@ -51,7 +51,8 @@
     // 设置y值(当自己的高度发生改变了，肯定要重新调整Y值，所以放到placeSubviews方法中设置y值)
     self.xnq_y =  - self.xnq_h - self.ignoredScrollViewContentInsetTop;
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
 
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
 {
@@ -141,7 +142,7 @@
          });
     }
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">下面我们一起解读一下这个刷新的过程。</div><div class="line"></div><div class="line">首先，我们下拉刷新的时候，当前状态肯定是XNQRefreshStateIdle（啰嗦一下：这个在MJRefreshComponent中initwithframe中有设置：self.state = MJRefreshStateIdle）。那么直接走下面的if判断，满足第一个if，当前操作是isDragging。这里计算出了拖拽所占的比例，也就下拉的百分比。</div><div class="line"></div><div class="line">如果是MJRefreshStateIdle普通状态并超出下拉超出header的高度，那么状态立刻转换为MJRefreshStatePulling拖动中。</div><div class="line"></div><div class="line">此时如果没有继续下拉，而是松手，那么就会走else if，立刻把状态转换回MJRefreshStateIdle。</div><div class="line"></div><div class="line">此时如果继续下拉，那么走下面这个else if (self.state == MJRefreshStatePulling)，立刻调用beginRefreshing开始刷新。其实也就是把状态转换为MJRefreshStateRefreshing.看一下父类中的实现：</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">下面我们一起解读一下这个刷新的过程。</div><div class="line"></div><div class="line">首先，我们下拉刷新的时候，当前状态肯定是XNQRefreshStateIdle（啰嗦一下：这个在MJRefreshComponent中initwithframe中有设置：self.state = MJRefreshStateIdle）。那么直接走下面的if判断，满足第一个if，当前操作是isDragging。这里计算出了拖拽所占的比例，也就下拉的百分比。</div><div class="line"></div><div class="line">如果是MJRefreshStateIdle普通状态并超出下拉超出header的高度，那么状态立刻转换为MJRefreshStatePulling拖动中。</div><div class="line"></div><div class="line">此时如果没有继续下拉，而是松手，那么就会走else if，立刻把状态转换回MJRefreshStateIdle。</div><div class="line"></div><div class="line">此时如果继续下拉，那么走下面这个else if (self.state == MJRefreshStatePulling)，立刻调用beginRefreshing开始刷新。其实也就是把状态转换为MJRefreshStateRefreshing.看一下父类中的实现：</div></pre></td></tr></table></figure>
 
 - (void)beginRefreshing {
     [UIView animateWithDuration:MJRefreshFastAnimationDuration animations:^{
@@ -158,7 +159,7 @@
         }
     }
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">这里做了一个有时间长度的动画，多加了一个willRefresh的状态，我的理解是为了防止从另一个页面返回的时候self.window为空的时候，突然刷新会崩溃，需要一个状态来过渡。当然了当前的下拉比例是百分百了。</div><div class="line"></div><div class="line">设置state = MJRefreshStateRefreshing，会调用state的setStaus方法，我们看到，这里直接对页面进行了header高度的偏移，使得整个header显示出来，然后在完成动画的时候回调回去，我们可以进行一些网络请求。</div><div class="line"></div><div class="line">此时状态是MJRefreshStateRefreshing，继续监听会接着走第一个if：if (self.state == MJRefreshStateRefreshing)，这里重新设置了insetTop，也就是页面偏移到整个header的高度，好像跟setState有点重复。记录了一下insetTDelta值：：初始的top - insetTop, 这个值是刷新完恢复header位置用的。当然了，这里也是为了兼容，我们使用MJ之前设置过了insetTop，这里是在之前设置过的insetTop基础上再偏移的。然后就是return，下面的代码不会再执行。</div><div class="line"></div><div class="line">直到我们的网络请求完成，触发endRefreshing方法，那么此时的状态会改变回去MJRefreshStateIdle。然后处理就是保存一下刷新的时间，通过这个insetTDelta恢复insetTop为原始值，完成后执行endRefreshingCompletionBlock回调。</div><div class="line"></div><div class="line">## MJRefreshStateHeader</div><div class="line"></div><div class="line">此部分继承自MJRefreshHeader，主要就是处理状态文字，不同状态下的提示文字是不同的。系统给我们提供了多语言版本的默认提示语，当然我们也可以自己设置我们的个性提示语：</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里做了一个有时间长度的动画，多加了一个willRefresh的状态，我的理解是为了防止从另一个页面返回的时候self.window为空的时候，突然刷新会崩溃，需要一个状态来过渡。当然了当前的下拉比例是百分百了。</div><div class="line"></div><div class="line">设置state = MJRefreshStateRefreshing，会调用state的setStaus方法，我们看到，这里直接对页面进行了header高度的偏移，使得整个header显示出来，然后在完成动画的时候回调回去，我们可以进行一些网络请求。</div><div class="line"></div><div class="line">此时状态是MJRefreshStateRefreshing，继续监听会接着走第一个if：if (self.state == MJRefreshStateRefreshing)，这里重新设置了insetTop，也就是页面偏移到整个header的高度，好像跟setState有点重复。记录了一下insetTDelta值：：初始的top - insetTop, 这个值是刷新完恢复header位置用的。当然了，这里也是为了兼容，我们使用MJ之前设置过了insetTop，这里是在之前设置过的insetTop基础上再偏移的。然后就是return，下面的代码不会再执行。</div><div class="line"></div><div class="line">直到我们的网络请求完成，触发endRefreshing方法，那么此时的状态会改变回去MJRefreshStateIdle。然后处理就是保存一下刷新的时间，通过这个insetTDelta恢复insetTop为原始值，完成后执行endRefreshingCompletionBlock回调。</div><div class="line"></div><div class="line">## MJRefreshStateHeader</div><div class="line"></div><div class="line">此部分继承自MJRefreshHeader，主要就是处理状态文字，不同状态下的提示文字是不同的。系统给我们提供了多语言版本的默认提示语，当然我们也可以自己设置我们的个性提示语：</div></pre></td></tr></table></figure>
 
 - (void)setTitle:(NSString *)title forState:(XNQRefreshState)state {
     if (title == nil) {
@@ -167,7 +168,7 @@
     self.stateTitles[@(state)] = title;
     self.stateLabel.text = self.stateTitles[@(self.state)];
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">（不得不吐槽一下小码哥的代码格式，有的花括号跟方法一行，有的另起一行。对于有些洁癖的看官只好忍一下了。）</div><div class="line">这里是用的state枚举值当做key来存的stateTitle值，使用的是字典。</div><div class="line"></div><div class="line"></div><div class="line">还是使用这两个初始化方法：</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">（不得不吐槽一下小码哥的代码格式，有的花括号跟方法一行，有的另起一行。对于有些洁癖的看官只好忍一下了。）</div><div class="line">这里是用的state枚举值当做key来存的stateTitle值，使用的是字典。</div><div class="line"></div><div class="line"></div><div class="line">还是使用这两个初始化方法：</div></pre></td></tr></table></figure>
 
 - (void)prepare
 {
@@ -212,7 +213,7 @@
         }
     }
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">prepare方法默认设置了状态文字，placeSubviews方法对文字Label进行处理。这里一共两个label，一个状态文字label，一个上次刷新时间label。并对隐藏一个或者全部做了页面布局的处理。</div><div class="line"></div><div class="line">最后还是通过state的set方法来更新状态：、</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">prepare方法默认设置了状态文字，placeSubviews方法对文字Label进行处理。这里一共两个label，一个状态文字label，一个上次刷新时间label。并对隐藏一个或者全部做了页面布局的处理。</div><div class="line"></div><div class="line">最后还是通过state的set方法来更新状态：</div></pre></td></tr></table></figure>
 
 - (void)setState:(MJRefreshState)state
 {
@@ -224,7 +225,7 @@
     // 重新设置key（重新显示时间）
     self.lastUpdatedTimeKey = self.lastUpdatedTimeKey;
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">不得不说setState方法是核心处理方法，很重要。</div><div class="line"></div><div class="line">## MJRefreshNormalHeader</div><div class="line"></div><div class="line">此部分继承自MJRefreshStateHeader，作用就是在添加了文字基础上，添加了动画部分，包括刷新的菊花和箭头。</div><div class="line"></div><div class="line">箭头的添加方式跟文本添加是一样的，添加在了文本的左边，如果文本隐藏的话，箭头就居中了。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">不得不说setState方法是核心处理方法，很重要。</div><div class="line"></div><div class="line"></div><div class="line">## MJRefreshNormalHeader</div><div class="line"></div><div class="line">此部分继承自MJRefreshStateHeader，作用就是在添加了文字基础上，添加了动画部分，包括刷新的菊花和箭头。</div><div class="line"></div><div class="line">箭头的添加方式跟文本添加是一样的，添加在了文本的左边，如果文本隐藏的话，箭头就居中了。</div></pre></td></tr></table></figure>
 
 - (void)setState:(MJRefreshState)state
 {
@@ -265,7 +266,7 @@
     }
 }
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">在state的set方法中，添加了一个箭头的旋转动画。</div><div class="line"></div><div class="line">## MJRefreshGifHeader</div><div class="line">与MJRefreshNormalHeader类似，继承自MJRefreshStateHeader。是在文本类的基础上添加的带有普通动画的子类。</div><div class="line"></div><div class="line">只不过这里加了拖动和刷新中的动画。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">在state的set方法中，添加了一个箭头的旋转动画。</div><div class="line"></div><div class="line"></div><div class="line">## MJRefreshGifHeader</div><div class="line"></div><div class="line">与MJRefreshNormalHeader类似，继承自MJRefreshStateHeader。是在文本类的基础上添加的带有普通动画的子类。</div><div class="line"></div><div class="line">只不过这里加了拖动和刷新中的动画。</div></pre></td></tr></table></figure>
 
 - (void)setState:(MJRefreshState)state
 {
@@ -288,7 +289,7 @@
         [self.gifView stopAnimating];
     }
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">这里使用的是UIImageView的自带图片动画功能。我们可以直接传入图片数组来实现动画。当然如果不能满足我们的需求，我们是可以自己封装这一层，替换为自己的动画。</div><div class="line"></div><div class="line"></div><div class="line"># Footer控件</div><div class="line"></div><div class="line">Footer封装了两个分支子类：</div><div class="line"></div><div class="line">- BackFooter(会回弹到底部的上拉刷新控件)</div><div class="line">- AutoFooter(会自动刷新的上拉刷新控件)</div><div class="line"></div><div class="line"></div><div class="line">## MJRefreshFooter </div><div class="line"></div><div class="line">基础父类，是两种footer的共同父类。此处比Header的父类要简单一些，因为下面两个分支的逻辑处理还是不一样的，所以这里就简单的做了一些初始化工作。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里使用的是UIImageView的自带图片动画功能。我们可以直接传入图片数组来实现动画。当然如果不能满足我们的需求，我们是可以自己封装这一层，替换为自己的动画。</div><div class="line"></div><div class="line"></div><div class="line"># Footer控件</div><div class="line"></div><div class="line">Footer封装了两个分支子类：</div><div class="line"></div><div class="line">- BackFooter(会回弹到底部的上拉刷新控件)</div><div class="line">- AutoFooter(会自动刷新的上拉刷新控件)</div><div class="line"></div><div class="line"></div><div class="line">## MJRefreshFooter </div><div class="line"></div><div class="line">基础父类，是两种footer的共同父类。此处比Header的父类要简单一些，因为下面两个分支的逻辑处理还是不一样的，所以这里就简单的做了一些初始化工作。</div></pre></td></tr></table></figure>
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
@@ -305,7 +306,7 @@
         }
     }
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">这里可以设置自动隐藏Footer。前提是tableview或collectionview的数据源为空。</div><div class="line"></div><div class="line">## AutoFooter</div><div class="line">自动上拉加载类。滑动到底部触发刷新动作，无需上拉操作。</div><div class="line"></div><div class="line">### MJRefreshAutoFooter</div><div class="line">类似于MJRefreshHeader类的功能，将UI效果逻辑处理出来。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里可以设置自动隐藏Footer。前提是tableview或collectionview的数据源为空。</div><div class="line"></div><div class="line">## AutoFooter</div><div class="line"></div><div class="line">自动上拉加载类。滑动到底部触发刷新动作，无需上拉操作。</div><div class="line"></div><div class="line">### MJRefreshAutoFooter</div><div class="line"></div><div class="line">类似于MJRefreshHeader类的功能，将UI效果逻辑处理出来。</div></pre></td></tr></table></figure>
 
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
 {
@@ -351,7 +352,8 @@
         }
     }
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">这里处理了contentOffset的变化以及Pan手势的改变状态回调。</div><div class="line"></div><div class="line">### MJRefreshAutoStateFooter</div><div class="line">封装思路类似于MJRefreshStateHeader，不再赘述。</div><div class="line"></div><div class="line">### MJRefreshAutoNormalFooter</div><div class="line">封装思路类似于MJRefreshNormalHeader，不再赘述。</div><div class="line"></div><div class="line">### MJRefreshAutoGifFooter</div><div class="line">封装思路类似于MJRefreshGifHeader，不再赘述。</div><div class="line"></div><div class="line"></div><div class="line">## BackFooter</div><div class="line">跟Header的封装思路是一样的，需要上拉才会触发刷新动作。</div><div class="line"></div><div class="line">### MJRefreshBackFooter</div></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里处理了contentOffset的变化以及Pan手势的改变状态回调。</div><div class="line"></div><div class="line">### MJRefreshAutoStateFooter</div><div class="line"></div><div class="line">封装思路类似于MJRefreshStateHeader，不再赘述。</div><div class="line"></div><div class="line">### MJRefreshAutoNormalFooter</div><div class="line"></div><div class="line">封装思路类似于MJRefreshNormalHeader，不再赘述。</div><div class="line"></div><div class="line">### MJRefreshAutoGifFooter</div><div class="line"></div><div class="line">封装思路类似于MJRefreshGifHeader，不再赘述。</div><div class="line"></div><div class="line"></div><div class="line">## BackFooter</div><div class="line"></div><div class="line">跟Header的封装思路是一样的，需要上拉才会触发刷新动作。</div><div class="line"></div><div class="line">### MJRefreshBackFooter</div></pre></td></tr></table></figure>
 
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
 {
