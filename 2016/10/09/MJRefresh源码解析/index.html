@@ -89,8 +89,7 @@
 github地址：https://github.com/CoderMJLee/MJRefresh
 首先看下结构图
 图有点大，大家可以点这里单独看：结构图
-接下来我们顺着这个结构来逐步解析封装的思路。
-MJRefreshComponent基类基类里面为我们捕获了当前的父view（UITab">
+接下来我们顺着这个结构来逐步解析封装的思路。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MJRefresh源码解析">
 <meta property="og:url" content="http://semyonxu.com/2016/10/09/MJRefresh源码解析/index.html">
@@ -100,10 +99,9 @@ MJRefreshComponent基类基类里面为我们捕获了当前的父view（UITab">
 github地址：https://github.com/CoderMJLee/MJRefresh
 首先看下结构图
 图有点大，大家可以点这里单独看：结构图
-接下来我们顺着这个结构来逐步解析封装的思路。
-MJRefreshComponent基类基类里面为我们捕获了当前的父view（UITab">
+接下来我们顺着这个结构来逐步解析封装的思路。">
 <meta property="og:image" content="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67">
-<meta property="og:updated_time" content="2016-10-23T06:43:16.000Z">
+<meta property="og:updated_time" content="2016-10-23T06:47:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MJRefresh源码解析">
 <meta name="twitter:description" content="本文主要解析一下MJRefresh这个刷新框架的封装思路以及一些技术在实际中的运用。
@@ -111,8 +109,7 @@ MJRefreshComponent基类基类里面为我们捕获了当前的父view（UITab">
 github地址：https://github.com/CoderMJLee/MJRefresh
 首先看下结构图
 图有点大，大家可以点这里单独看：结构图
-接下来我们顺着这个结构来逐步解析封装的思路。
-MJRefreshComponent基类基类里面为我们捕获了当前的父view（UITab">
+接下来我们顺着这个结构来逐步解析封装的思路。">
 <meta name="twitter:image" content="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67">
 
 
@@ -366,6 +363,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p>首先看下结构图<br><img src="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67" alt=""></p>
 <p>图有点大，大家可以点这里单独看：<a href="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67" target="_blank" rel="external">结构图</a></p>
 <p>接下来我们顺着这个结构来逐步解析封装的思路。</p>
+<a id="more"></a>
 <h1 id="MJRefreshComponent基类"><a href="#MJRefreshComponent基类" class="headerlink" title="MJRefreshComponent基类"></a>MJRefreshComponent基类</h1><p>基类里面为我们捕获了当前的父view（UITableView、UICollectionVeiw等），然后使用KVO为我们做了一些滑动操作属性的监听，具体的处理需要交给子类去实现。</p>
 <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">- (instancetype)initWithFrame:(CGRect)frame</div><div class="line">&#123;</div><div class="line">    if (self = [super initWithFrame:frame]) &#123;</div><div class="line">        // 准备工作</div><div class="line">        [self prepare];</div><div class="line">        </div><div class="line">        // 默认是普通状态</div><div class="line">        self.state = MJRefreshStateIdle;</div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)prepare</div><div class="line">&#123;</div><div class="line">    // 基本属性</div><div class="line">    self.autoresizingMask = UIViewAutoresizingFlexibleWidth;</div><div class="line">    self.backgroundColor = [UIColor clearColor];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)layoutSubviews</div><div class="line">&#123;</div><div class="line">    [super layoutSubviews];</div><div class="line">    </div><div class="line">    [self placeSubviews];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)placeSubviews&#123;&#125;</div></pre></td></tr></table></figure>
 <p>这里设计了两个方法，分别交给子类去使用。</p>
@@ -641,7 +639,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
         [self.gifView stopAnimating];
     }
 }
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">这里使用的是UIImageView的自带图片动画功能。我们可以直接传入图片数组来实现动画。当然如果不能满足我们的需求，我们是可以自己封装这一层，替换为自己的动画。</div><div class="line"></div><div class="line"># Footer控件</div><div class="line"></div><div class="line">Footer封装了两个分支子类：</div><div class="line"></div><div class="line">- BackFooter(会回弹到底部的上拉刷新控件)</div><div class="line">- AutoFooter(会自动刷新的上拉刷新控件)</div><div class="line"></div><div class="line"></div><div class="line">### MJRefreshFooter </div><div class="line"></div><div class="line">基础父类，是两种footer的共同父类。此处比Header的父类要简单一些，因为下面两个分支的逻辑处理还是不一样的，所以这里就简单的做了一些初始化工作。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">这里使用的是UIImageView的自带图片动画功能。我们可以直接传入图片数组来实现动画。当然如果不能满足我们的需求，我们是可以自己封装这一层，替换为自己的动画。</div><div class="line"></div><div class="line"></div><div class="line"># Footer控件</div><div class="line"></div><div class="line">Footer封装了两个分支子类：</div><div class="line"></div><div class="line">- BackFooter(会回弹到底部的上拉刷新控件)</div><div class="line">- AutoFooter(会自动刷新的上拉刷新控件)</div><div class="line"></div><div class="line"></div><div class="line">## MJRefreshFooter </div><div class="line"></div><div class="line">基础父类，是两种footer的共同父类。此处比Header的父类要简单一些，因为下面两个分支的逻辑处理还是不一样的，所以这里就简单的做了一些初始化工作。</div></pre></td></tr></table></figure>
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
