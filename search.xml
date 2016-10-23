@@ -33,7 +33,7 @@
 <p>本类的主要职责：<br>实现基本的页面刷新逻辑，负责解析出各个状态，然后对每个状态进行处理。（简单点说就是只是逻辑的实现，简单下拉，然后scrollView头部留出一点空，等待刷新完成，完成后空白消失）。</p>
 <p>这里对contentoffset的状态的变化进行监听，并对结果处理成四种状态：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MJRefreshStateIdle = 1, /** 普通闲置状态 */MJRefreshStatePulling, /** 松开就可以进行刷新的状态 */MJRefreshStateRefreshing, /** 正在刷新中的状态 */MJRefreshStateWillRefresh, /** 即将刷新的状态 */</div></pre></td></tr></table></figure>
-<h3 id="先解读一下初始化方法"><a href="#先解读一下初始化方法" class="headerlink" title="先解读一下初始化方法::"></a>先解读一下初始化方法::</h3><pre><code>+ (instancetype)headerWithRefreshingBlock:(XNQRefreshComponentRefreshingBlock)refreshingBlock {
+<h3 id="先解读一下初始化方法"><a href="#先解读一下初始化方法" class="headerlink" title="先解读一下初始化方法:"></a>先解读一下初始化方法:</h3><pre><code>+ (instancetype)headerWithRefreshingBlock:(XNQRefreshComponentRefreshingBlock)refreshingBlock {
     XNQRefreshHeader *cmp = [[self alloc] init];
     cmp.refreshingBlock = refreshingBlock;
     return cmp;
@@ -51,8 +51,7 @@
     // 设置y值(当自己的高度发生改变了，肯定要重新调整Y值，所以放到placeSubviews方法中设置y值)
     self.xnq_y =  - self.xnq_h - self.ignoredScrollViewContentInsetTop;
 }
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
 
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
 {

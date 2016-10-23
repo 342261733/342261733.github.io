@@ -101,7 +101,7 @@ github地址：https://github.com/CoderMJLee/MJRefresh
 图有点大，大家可以点这里单独看：结构图
 接下来我们顺着这个结构来逐步解析封装的思路。">
 <meta property="og:image" content="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67">
-<meta property="og:updated_time" content="2016-10-23T09:31:46.000Z">
+<meta property="og:updated_time" content="2016-10-23T09:35:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MJRefresh源码解析">
 <meta name="twitter:description" content="本文主要解析一下MJRefresh这个刷新框架的封装思路以及一些技术在实际中的运用。
@@ -384,7 +384,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p>本类的主要职责：<br>实现基本的页面刷新逻辑，负责解析出各个状态，然后对每个状态进行处理。（简单点说就是只是逻辑的实现，简单下拉，然后scrollView头部留出一点空，等待刷新完成，完成后空白消失）。</p>
 <p>这里对contentoffset的状态的变化进行监听，并对结果处理成四种状态：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MJRefreshStateIdle = 1, /** 普通闲置状态 */MJRefreshStatePulling, /** 松开就可以进行刷新的状态 */MJRefreshStateRefreshing, /** 正在刷新中的状态 */MJRefreshStateWillRefresh, /** 即将刷新的状态 */</div></pre></td></tr></table></figure>
-<h3 id="先解读一下初始化方法"><a href="#先解读一下初始化方法" class="headerlink" title="先解读一下初始化方法::"></a>先解读一下初始化方法::</h3><pre><code>+ (instancetype)headerWithRefreshingBlock:(XNQRefreshComponentRefreshingBlock)refreshingBlock {
+<h3 id="先解读一下初始化方法"><a href="#先解读一下初始化方法" class="headerlink" title="先解读一下初始化方法:"></a>先解读一下初始化方法:</h3><pre><code>+ (instancetype)headerWithRefreshingBlock:(XNQRefreshComponentRefreshingBlock)refreshingBlock {
     XNQRefreshHeader *cmp = [[self alloc] init];
     cmp.refreshingBlock = refreshingBlock;
     return cmp;
@@ -402,8 +402,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
     // 设置y值(当自己的高度发生改变了，肯定要重新调整Y值，所以放到placeSubviews方法中设置y值)
     self.xnq_y =  - self.xnq_h - self.ignoredScrollViewContentInsetTop;
 }
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
 
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
 {
@@ -983,7 +982,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MJRefreshComponent基类"><span class="nav-number">1.</span> <span class="nav-text">MJRefreshComponent基类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">1.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性方法的转换处理"><span class="nav-number">1.2.</span> <span class="nav-text">属性方法的转换处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#刷新状态的处理"><span class="nav-number">1.3.</span> <span class="nav-text">刷新状态的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回调方法"><span class="nav-number">1.4.</span> <span class="nav-text">回调方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Header控件"><span class="nav-number">2.</span> <span class="nav-text">Header控件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MJRefreshHeader"><span class="nav-number">2.1.</span> <span class="nav-text">MJRefreshHeader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先解读一下初始化方法"><span class="nav-number">2.1.1.</span> <span class="nav-text">先解读一下初始化方法::</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MJRefreshBackStateFooter"><span class="nav-number">2.1.2.</span> <span class="nav-text">MJRefreshBackStateFooter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MJRefreshBackNormalFooter"><span class="nav-number">2.1.3.</span> <span class="nav-text">MJRefreshBackNormalFooter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MJRefreshBackGifFooter"><span class="nav-number">2.1.4.</span> <span class="nav-text">MJRefreshBackGifFooter</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MJRefreshComponent基类"><span class="nav-number">1.</span> <span class="nav-text">MJRefreshComponent基类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">1.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性方法的转换处理"><span class="nav-number">1.2.</span> <span class="nav-text">属性方法的转换处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#刷新状态的处理"><span class="nav-number">1.3.</span> <span class="nav-text">刷新状态的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回调方法"><span class="nav-number">1.4.</span> <span class="nav-text">回调方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Header控件"><span class="nav-number">2.</span> <span class="nav-text">Header控件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MJRefreshHeader"><span class="nav-number">2.1.</span> <span class="nav-text">MJRefreshHeader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先解读一下初始化方法"><span class="nav-number">2.1.1.</span> <span class="nav-text">先解读一下初始化方法:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MJRefreshBackStateFooter"><span class="nav-number">2.1.2.</span> <span class="nav-text">MJRefreshBackStateFooter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MJRefreshBackNormalFooter"><span class="nav-number">2.1.3.</span> <span class="nav-text">MJRefreshBackNormalFooter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MJRefreshBackGifFooter"><span class="nav-number">2.1.4.</span> <span class="nav-text">MJRefreshBackGifFooter</span></a></li></ol></li></ol></li></ol></div>
             
           </div>
         </section>
