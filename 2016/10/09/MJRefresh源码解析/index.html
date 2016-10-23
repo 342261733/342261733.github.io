@@ -101,7 +101,7 @@ github地址：https://github.com/CoderMJLee/MJRefresh
 图有点大，大家可以点这里单独看：结构图
 接下来我们顺着这个结构来逐步解析封装的思路。">
 <meta property="og:image" content="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67">
-<meta property="og:updated_time" content="2016-10-23T10:54:14.000Z">
+<meta property="og:updated_time" content="2016-10-23T12:59:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MJRefresh源码解析">
 <meta name="twitter:description" content="本文主要解析一下MJRefresh这个刷新框架的封装思路以及一些技术在实际中的运用。
@@ -383,26 +383,28 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <h2 id="MJRefreshHeader"><a href="#MJRefreshHeader" class="headerlink" title="MJRefreshHeader"></a>MJRefreshHeader</h2><p>继承自MJRefreshComponent基础父类。</p>
 <p>本类的主要职责：<br>实现基本的页面刷新逻辑，负责解析出各个状态，然后对每个状态进行处理。（简单点说就是只是逻辑的实现，简单下拉，然后scrollView头部留出一点空，等待刷新完成，完成后空白消失）。</p>
 <p>这里对contentoffset的状态的变化进行监听，并对结果处理成四种状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MJRefreshStateIdle = 1, /** 普通闲置状态 */MJRefreshStatePulling, /** 松开就可以进行刷新的状态 */MJRefreshStateRefreshing, /** 正在刷新中的状态 */MJRefreshStateWillRefresh, /** 即将刷新的状态 */</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">MJRefreshStateIdle = 1, /** 普通闲置状态 */MJRefreshStatePulling, /** 松开就可以进行刷新的状态 */MJRefreshStateRefreshing, /** 正在刷新中的状态 */MJRefreshStateWillRefresh, /** 即将刷新的状态 */</div><div class="line">mj</div></pre></td></tr></table></figure>
 <h3 id="先解读一下初始化方法"><a href="#先解读一下初始化方法" class="headerlink" title="先解读一下初始化方法:"></a>先解读一下初始化方法:</h3><p>初始化方法代码：</p>
-<pre><code>+ (instancetype)headerWithRefreshingBlock:(XNQRefreshComponentRefreshingBlock)refreshingBlock {
-    XNQRefreshHeader *cmp = [[self alloc] init];
+<pre><code>
++ (instancetype)headerWithRefreshingBlock:(MJRefreshComponentRefreshingBlock)refreshingBlock {
+    MJRefreshHeader *cmp = [[self alloc] init];
     cmp.refreshingBlock = refreshingBlock;
     return cmp;
 }
 
 - (void)prepare {
     [super prepare];
-    self.lastUpdatedTimeKey = XNQRefreshHeaderLastUpdatedTimeKey;
-    self.xnq_h = XNQRefreshHeaderHeight;
+    self.lastUpdatedTimeKey = MJRefreshHeaderLastUpdatedTimeKey;
+    self.mj_h = MJRefreshHeaderHeight;
 }
 
 - (void)placeSubViews {
     [super placeSubViews];
 
     // 设置y值(当自己的高度发生改变了，肯定要重新调整Y值，所以放到placeSubviews方法中设置y值)
-    self.xnq_y =  - self.xnq_h - self.ignoredScrollViewContentInsetTop;
+    self.mj_y =  - self.mj_h - self.ignoredScrollViewContentInsetTop;
 }
+
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
 
@@ -495,7 +497,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
     }
 }
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">下面我们一起解读一下这个刷新的过程。</div><div class="line"></div><div class="line">首先，我们下拉刷新的时候，当前状态肯定是XNQRefreshStateIdle（啰嗦一下：这个在MJRefreshComponent中initwithframe中有设置：self.state = MJRefreshStateIdle）。那么直接走下面的if判断，满足第一个if，当前操作是isDragging。这里计算出了拖拽所占的比例，也就下拉的百分比。</div><div class="line"></div><div class="line">如果是MJRefreshStateIdle普通状态并超出下拉超出header的高度，那么状态立刻转换为MJRefreshStatePulling拖动中。</div><div class="line"></div><div class="line">此时如果没有继续下拉，而是松手，那么就会走else if，立刻把状态转换回MJRefreshStateIdle。</div><div class="line"></div><div class="line">此时如果继续下拉，那么走下面这个else if (self.state == MJRefreshStatePulling)，立刻调用beginRefreshing开始刷新。其实也就是把状态转换为MJRefreshStateRefreshing.看一下父类中的实现：</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">下面我们一起解读一下这个刷新的过程。</div><div class="line"></div><div class="line">首先，我们下拉刷新的时候，当前状态肯定是MJRefreshStateIdle（啰嗦一下：这个在MJRefreshComponent中initwithframe中有设置：self.state = MJRefreshStateIdle）。那么直接走下面的if判断，满足第一个if，当前操作是isDragging。这里计算出了拖拽所占的比例，也就下拉的百分比。</div><div class="line"></div><div class="line">如果是MJRefreshStateIdle普通状态并超出下拉超出header的高度，那么状态立刻转换为MJRefreshStatePulling拖动中。</div><div class="line"></div><div class="line">此时如果没有继续下拉，而是松手，那么就会走else if，立刻把状态转换回MJRefreshStateIdle。</div><div class="line"></div><div class="line">此时如果继续下拉，那么走下面这个else if (self.state == MJRefreshStatePulling)，立刻调用beginRefreshing开始刷新。其实也就是把状态转换为MJRefreshStateRefreshing.看一下父类中的实现：</div></pre></td></tr></table></figure>
 
 - (void)beginRefreshing {
     [UIView animateWithDuration:MJRefreshFastAnimationDuration animations:^{
@@ -514,7 +516,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 }
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这里做了一个有时间长度的动画，多加了一个willRefresh的状态，我的理解是为了防止从另一个页面返回的时候self.window为空的时候，突然刷新会崩溃，需要一个状态来过渡。当然了当前的下拉比例是百分百了。</div><div class="line"></div><div class="line">设置state = MJRefreshStateRefreshing，会调用state的setStaus方法，我们看到，这里直接对页面进行了header高度的偏移，使得整个header显示出来，然后在完成动画的时候回调回去，我们可以进行一些网络请求。</div><div class="line"></div><div class="line">此时状态是MJRefreshStateRefreshing，继续监听会接着走第一个if：if (self.state == MJRefreshStateRefreshing)，这里重新设置了insetTop，也就是页面偏移到整个header的高度，好像跟setState有点重复。记录了一下insetTDelta值：：初始的top - insetTop, 这个值是刷新完恢复header位置用的。当然了，这里也是为了兼容，我们使用MJ之前设置过了insetTop，这里是在之前设置过的insetTop基础上再偏移的。然后就是return，下面的代码不会再执行。</div><div class="line"></div><div class="line">直到我们的网络请求完成，触发endRefreshing方法，那么此时的状态会改变回去MJRefreshStateIdle。然后处理就是保存一下刷新的时间，通过这个insetTDelta恢复insetTop为原始值，完成后执行endRefreshingCompletionBlock回调。</div><div class="line"></div><div class="line">## MJRefreshStateHeader</div><div class="line"></div><div class="line">此部分继承自MJRefreshHeader，主要就是处理状态文字，不同状态下的提示文字是不同的。系统给我们提供了多语言版本的默认提示语，当然我们也可以自己设置我们的个性提示语：</div></pre></td></tr></table></figure>
 
-- (void)setTitle:(NSString *)title forState:(XNQRefreshState)state {
+- (void)setTitle:(NSString *)title forState:(MJRefreshState)state {
     if (title == nil) {
         return;
     }
@@ -672,7 +674,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
         if (_scrollView.mj_offsetY &gt;= _scrollView.mj_contentH - _scrollView.mj_h + self.mj_h * self.triggerAutomaticallyRefreshPercent + _scrollView.mj_insetB - self.mj_h) { 
                 /*
             // contentsize Height + bottom = scrollview content 全部展示高度。    注意此处的self.hegiht 包含在bottom里面
-            // _scrollView.mj_contentH +  _scrollView.mj_insetB - _scrollView.xnq_h - self.xnq_h * (1 - self.triggerAutomaticallyRefreshPercent)  
+            // _scrollView.mj_contentH +  _scrollView.mj_insetB - _scrollView.mj_h - self.mj_h * (1 - self.triggerAutomaticallyRefreshPercent)  
              // if  self.triggerAutomaticallyRefreshPercent = 1, 跟下面的 第二中情况是一样的。 只是兼容了一下 可以显示self的多少比例，就刷新而已。 其实此处默认也是1.  但是这个方法比下面的方法，提前回调。呵呵。
             // 这个方法跟下面的方法区别在于，下面的方法需要是手松开的情况下，达到临界值，而这个方法是不需要的，也就是条件更宽松。其实，如果手势滑动到底部情况下，这个方法，和下面的方法的处理是一样的。效果也是一样的。
             */
