@@ -51,6 +51,7 @@
     // 设置y值(当自己的高度发生改变了，肯定要重新调整Y值，所以放到placeSubviews方法中设置y值)
     self.xnq_y =  - self.xnq_h - self.ignoredScrollViewContentInsetTop;
 }
+
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">这里封装了一个类方法，方便用户调用，并获取刷新的回调。然后prepare就是跟之前说的一样，设置一下初始化值数据。而placeSubViews这里更新一下UI。</div><div class="line"></div><div class="line">### 通过contentofffset转换刷新的状态</div></pre></td></tr></table></figure>
 
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
