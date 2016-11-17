@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="AFNetworking,AFNetworking 3.0,源码解析,AFNetworking 3.0 源码解析之UIKit," />
 
 
 
@@ -84,12 +84,21 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Semyon Xu's Blog">
-<meta property="og:url" content="http://semyonxu.com/index.html">
+<meta name="description" content="本部分主要的作用：网络通信信息序列化/反序列化
+UIKit功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。下面分别解析一下各个控件的设计思路UIImageV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFNetworking-3-0-源码解析之UIKit">
+<meta property="og:url" content="http://semyonxu.com/2016/11/15/AFNetworking-3-0-源码解析之UIKit/index.html">
 <meta property="og:site_name" content="Semyon Xu's Blog">
+<meta property="og:description" content="本部分主要的作用：网络通信信息序列化/反序列化
+UIKit功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。下面分别解析一下各个控件的设计思路UIImageV">
+<meta property="og:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
+<meta property="og:updated_time" content="2016-11-17T07:24:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Semyon Xu's Blog">
+<meta name="twitter:title" content="AFNetworking-3-0-源码解析之UIKit">
+<meta name="twitter:description" content="本部分主要的作用：网络通信信息序列化/反序列化
+UIKit功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。下面分别解析一下各个控件的设计思路UIImageV">
+<meta name="twitter:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
 
 
 
@@ -110,9 +119,9 @@
 
 
 
-  <link rel="canonical" href="http://semyonxu.com/"/>
+  <link rel="canonical" href="http://semyonxu.com/2016/11/15/AFNetworking-3-0-源码解析之UIKit/"/>
 
-  <title> Semyon Xu's Blog </title>
+  <title> AFNetworking-3-0-源码解析之UIKit | Semyon Xu's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -133,9 +142,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -241,9 +248,9 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
   
@@ -263,10 +270,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
             
             
               
-                
-                <a class="post-title-link" href="/2016/11/15/AFNetworking-3-0-源码解析之UIKit/" itemprop="url">
-                  AFNetworking-3-0-源码解析之UIKit
-                </a>
+                AFNetworking-3-0-源码解析之UIKit
               
             
           </h1>
@@ -341,9 +345,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
       
 
       
-        
-          
-            <p>本部分主要的作用：网络通信信息序列化/反序列化</p>
+        <p>本部分主要的作用：网络通信信息序列化/反序列化</p>
 <h1 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h1><h2 id="功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。"><a href="#功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。" class="headerlink" title="功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。"></a>功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。</h2><h3 id="下面分别解析一下各个控件的设计思路"><a href="#下面分别解析一下各个控件的设计思路" class="headerlink" title="下面分别解析一下各个控件的设计思路"></a>下面分别解析一下各个控件的设计思路</h3><h1 id="UIImageView-AFNetworking"><a href="#UIImageView-AFNetworking" class="headerlink" title="UIImageView+AFNetworking"></a>UIImageView+AFNetworking</h1><p>为UIImageView加载网络图片提供便利的接口。</p>
 <h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- (void)setImageWithURL:(NSURL *)url;</div><div class="line">- (void)setImageWithURL:(NSURL *)url</div><div class="line">       placeholderImage:(nullable UIImage *)placeholderImage;</div><div class="line">- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest</div><div class="line">              placeholderImage:(nullable UIImage *)placeholderImage</div><div class="line">                       success:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse * _Nullable response, UIImage *image))success</div><div class="line">                       failure:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse * _Nullable response, NSError *error))failure;</div></pre></td></tr></table></figure>
 <p>这里为我们抛出了图片下载地址，默认显示图片，成功的回调，失败的回调。</p>
@@ -364,582 +366,88 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
 <p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
 
-          
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
     <footer class="post-footer">
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/10/09/MJRefresh源码解析/" itemprop="url">
-                  MJRefresh源码解析
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-10-09T21:12:18+08:00" content="2016-10-09">
-              2016-10-09
-            </time>
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS开发</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
+            <a href="/tags/AFNetworking/" rel="tag">#AFNetworking</a>
           
-
+            <a href="/tags/AFNetworking-3-0/" rel="tag">#AFNetworking 3.0</a>
           
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/10/09/MJRefresh源码解析/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/09/MJRefresh源码解析/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
+            <a href="/tags/源码解析/" rel="tag">#源码解析</a>
           
-
-          
-
-          
-          
-             <span id="/2016/10/09/MJRefresh源码解析/" class="leancloud_visitors" data-flag-title="MJRefresh源码解析">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
+            <a href="/tags/AFNetworking-3-0-源码解析之UIKit/" rel="tag">#AFNetworking 3.0 源码解析之UIKit</a>
           
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <p>本文主要解析一下MJRefresh这个刷新框架的封装思路以及一些技术在实际中的运用。</p>
-<p>当前版本：v3.1.12</p>
-<p>github地址：<a href="https://github.com/CoderMJLee/MJRefresh">https://github.com/CoderMJLee/MJRefresh</a></p>
-<p>首先看下结构图<br><img src="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67" alt=""></p>
-<p>图有点大，大家可以点这里单独看：<a href="https://camo.githubusercontent.com/4a86d398d981df5dc845042b92c6d785d0d486b4/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67">结构图</a></p>
-<p>接下来我们顺着这个结构来逐步解析封装的思路。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/10/09/MJRefresh源码解析/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/09/MJRefresh源码解析/" rel="next" title="MJRefresh源码解析">
+                <i class="fa fa-chevron-left"></i> MJRefresh源码解析
+              </a>
+            
           </div>
-        
-      
-    </div>
 
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+          <div class="post-nav-prev post-nav-item">
             
-            
-              
-                
-                <a class="post-title-link" href="/2016/09/30/AFNetworking-3-0-源码解析之Serialization/" itemprop="url">
-                  AFNetworking 3.0 源码解析之Serialization
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-30T15:32:26+08:00" content="2016-09-30">
-              2016-09-30
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS开发</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/09/30/AFNetworking-3-0-源码解析之Serialization/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/30/AFNetworking-3-0-源码解析之Serialization/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2016/09/30/AFNetworking-3-0-源码解析之Serialization/" class="leancloud_visitors" data-flag-title="AFNetworking 3.0 源码解析之Serialization">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <p>本部分主要的作用：网络通信信息序列化/反序列化</p>
-<h1 id="AFURLRequestSerialization"><a href="#AFURLRequestSerialization" class="headerlink" title="AFURLRequestSerialization"></a>AFURLRequestSerialization</h1><h2 id="功能："><a href="#功能：" class="headerlink" title="功能："></a>功能：</h2><p>负责参数转换成NSMutableURLRequest类型，进行网络请求。</p>
-<ol>
-<li>构建普通请求：格式化请求参数，生成HTTP Header</li>
-<li>构建multipart请求</li>
-</ol>
-<h2 id="类关系："><a href="#类关系：" class="headerlink" title="类关系："></a>类关系：</h2><p>父类：</p>
-<ul>
-<li>AFHTTPRequestSerializer,二进制格式（query字符串转换成二进制）</li>
-</ul>
-<p>子类：</p>
-<ul>
-<li>AFJSONRequestSerializer,Json格式（Json序列化成NSData类型）</li>
-<li>AFPropertyListRequestSerializer，Plist（一种特殊的XML，解析起来相对容易）
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/09/30/AFNetworking-3-0-源码解析之Serialization/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
+
+    <div class="post-spread">
       
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
 
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/" itemprop="url">
-                  AFNetworking 3.0 源码解析之Reachability
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-30T15:06:41+08:00" content="2016-09-30">
-              2016-09-30
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS开发</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/30/AFNetworking-3-0-源码解析之Reachability/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/" class="leancloud_visitors" data-flag-title="AFNetworking 3.0 源码解析之Reachability">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Reachability这部分主要负责网络的状态网络状态的监听。</p>
-<h1 id="首先介绍下使用方法。"><a href="#首先介绍下使用方法。" class="headerlink" title="首先介绍下使用方法。"></a>首先介绍下使用方法。</h1><p>这里介绍三种使用方法：</p>
-<h2 id="直接使用单利，调用"><a href="#直接使用单利，调用" class="headerlink" title="直接使用单利，调用"></a>直接使用单利，调用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];</div><div class="line">[reachabilityManager startMonitoring];</div><div class="line">[reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">    NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">&#125;];</div></pre></td></tr></table></figure>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/09/30/AFNetworking-3-0-源码解析之Reachability/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
       
     </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/" itemprop="url">
-                  AFNetworking 3.0 源码解析之NSURLSession
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-28T16:29:11+08:00" content="2016-09-28">
-              2016-09-28
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS开发</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-             <span id="/2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/" class="leancloud_visitors" data-flag-title="AFNetworking 3.0 源码解析之NSURLSession">
-               &nbsp; | &nbsp;
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               <span class="post-meta-item-text">阅读次数 </span>
-               <span class="leancloud-visitors-count"></span>
-              </span>
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>NSURLSession是AFNetworking的核心部分，主要负责网络通信部分。</p>
-<p>下面分两个部分来解析：<br> 父类：AFURLSessionManager，<br> 子类：AFHTTPSessionManager</p>
-<p>父类AFURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。<br>子类AFHTTPSessionManager继承了所有父类的功能，在这个基础上封装了支持GET，POST，PUT，HEAD，PATCH，DELETE等HTTP请求方式，使用更加方便。当然不用子类，也是可以直接进行网络请求的。<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/09/28/AFNetworking-3-0-源码解析之NSURLSession/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-  </section>
-
-  
+  </div>
 
 
           </div>
@@ -947,6 +455,14 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/15/AFNetworking-3-0-源码解析之UIKit/"
+           data-title="AFNetworking-3-0-源码解析之UIKit" data-url="http://semyonxu.com/2016/11/15/AFNetworking-3-0-源码解析之UIKit/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -966,8 +482,17 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/weixinicon.jpg"
@@ -1051,6 +576,17 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UIKit"><span class="nav-number">1.</span> <span class="nav-text">UIKit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。"><span class="nav-number">1.1.</span> <span class="nav-text">功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下面分别解析一下各个控件的设计思路"><span class="nav-number">1.1.1.</span> <span class="nav-text">下面分别解析一下各个控件的设计思路</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UIImageView-AFNetworking"><span class="nav-number">2.</span> <span class="nav-text">UIImageView+AFNetworking</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用方法"><span class="nav-number">2.1.</span> <span class="nav-text">使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#首先会对上次的任务进行检测，如果有的话，取消掉。"><span class="nav-number">2.1.1.</span> <span class="nav-text">首先会对上次的任务进行检测，如果有的话，取消掉。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检测如果本地有缓存，直接获取缓存的图片，返回"><span class="nav-number">2.1.2.</span> <span class="nav-text">检测如果本地有缓存，直接获取缓存的图片，返回</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络下载，并把获取到的图片赋值给当前的ImageView"><span class="nav-number">2.1.3.</span> <span class="nav-text">网络下载，并把获取到的图片赋值给当前的ImageView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AFImageDownloader"><span class="nav-number">2.1.3.1.</span> <span class="nav-text">AFImageDownloader</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -1147,6 +683,10 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
