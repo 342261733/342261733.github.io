@@ -5,7 +5,7 @@
     
     <entry>
       <title><![CDATA[AFNetworking-3-0-源码解析之UIKit]]></title>
-      <url>http://semyonxu.com/2016/11/15/AFNetworking-3.0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BUIKit/</url>
+      <url>http://semyonxu.com/2016/11/15/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BUIKit/</url>
       <content type="html"><![CDATA[<p>本部分主要的作用：网络通信信息序列化/反序列化</p>
 <h1 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h1><p> 功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。</p>
 <p> 下面分别解析一下各个控件的设计思路</p>
@@ -121,7 +121,7 @@
     
     <entry>
       <title><![CDATA[AFNetworking 3.0 源码解析之Serialization]]></title>
-      <url>http://semyonxu.com/2016/09/30/AFNetworking-3.0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSerialization/</url>
+      <url>http://semyonxu.com/2016/09/30/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSerialization/</url>
       <content type="html"><![CDATA[<p>本部分主要的作用：网络通信信息序列化/反序列化</p>
 <h1 id="AFURLRequestSerialization"><a href="#AFURLRequestSerialization" class="headerlink" title="AFURLRequestSerialization"></a>AFURLRequestSerialization</h1><h2 id="功能："><a href="#功能：" class="headerlink" title="功能："></a>功能：</h2><p>负责参数转换成NSMutableURLRequest类型，进行网络请求。</p>
 <ol>
@@ -195,7 +195,7 @@
     
     <entry>
       <title><![CDATA[AFNetworking 3.0 源码解析之Reachability]]></title>
-      <url>http://semyonxu.com/2016/09/30/AFNetworking-3.0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BReachability/</url>
+      <url>http://semyonxu.com/2016/09/30/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BReachability/</url>
       <content type="html"><![CDATA[<p>Reachability这部分主要负责网络的状态网络状态的监听。</p>
 <h1 id="首先介绍下使用方法。"><a href="#首先介绍下使用方法。" class="headerlink" title="首先介绍下使用方法。"></a>首先介绍下使用方法。</h1><p>这里介绍三种使用方法：</p>
 <h2 id="直接使用单利，调用"><a href="#直接使用单利，调用" class="headerlink" title="直接使用单利，调用"></a>直接使用单利，调用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];</div><div class="line">[reachabilityManager startMonitoring];</div><div class="line">[reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) &#123;</div><div class="line">    NSLog(@&quot;status %ld&quot;, (long)status);</div><div class="line">&#125;];</div></pre></td></tr></table></figure>
@@ -233,7 +233,7 @@
     
     <entry>
       <title><![CDATA[AFNetworking 3.0 源码解析之NSURLSession]]></title>
-      <url>http://semyonxu.com/2016/09/28/AFNetworking-3.0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BNSURLSession/</url>
+      <url>http://semyonxu.com/2016/09/28/AFNetworking-3-0-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BNSURLSession/</url>
       <content type="html"><![CDATA[<p>NSURLSession是AFNetworking的核心部分，主要负责网络通信部分。</p>
 <p>下面分两个部分来解析：<br> 父类：AFURLSessionManager，<br> 子类：AFHTTPSessionManager</p>
 <p>父类AFURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。<br>子类AFHTTPSessionManager继承了所有父类的功能，在这个基础上封装了支持GET，POST，PUT，HEAD，PATCH，DELETE等HTTP请求方式，使用更加方便。当然不用子类，也是可以直接进行网络请求的。<br><a id="more"></a></p>
