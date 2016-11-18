@@ -467,7 +467,7 @@ body {
 }
 .main-inner {
   margin: 0 auto;
-  width: 700px;
+  
 }
 @media (min-width: 1600px) {
   .container .main-inner {
