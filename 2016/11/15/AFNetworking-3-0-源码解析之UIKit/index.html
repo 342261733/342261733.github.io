@@ -85,19 +85,25 @@
 
 
 <meta name="description" content="本部分主要的作用：网络通信信息序列化/反序列化
-UIKit功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。下面分别解析一下各个控件的设计思路UIImageV">
+UIKit 功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。
+ 下面分别解析一下各个控件的设计思路
+UIIm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AFNetworking-3-0-源码解析之UIKit">
 <meta property="og:url" content="http://semyonxu.com/2016/11/15/AFNetworking-3-0-源码解析之UIKit/index.html">
 <meta property="og:site_name" content="Semyon Xu's Blog">
 <meta property="og:description" content="本部分主要的作用：网络通信信息序列化/反序列化
-UIKit功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。下面分别解析一下各个控件的设计思路UIImageV">
+UIKit 功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。
+ 下面分别解析一下各个控件的设计思路
+UIIm">
 <meta property="og:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
-<meta property="og:updated_time" content="2016-11-17T07:38:47.000Z">
+<meta property="og:updated_time" content="2016-11-18T06:08:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AFNetworking-3-0-源码解析之UIKit">
 <meta name="twitter:description" content="本部分主要的作用：网络通信信息序列化/反序列化
-UIKit功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。下面分别解析一下各个控件的设计思路UIImageV">
+UIKit 功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。
+ 下面分别解析一下各个控件的设计思路
+UIIm">
 <meta name="twitter:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
 
 
@@ -346,7 +352,10 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 
       
         <p>本部分主要的作用：网络通信信息序列化/反序列化</p>
-<h1 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h1><h2 id="功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。"><a href="#功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。" class="headerlink" title="功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。"></a>功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。</h2><h3 id="下面分别解析一下各个控件的设计思路"><a href="#下面分别解析一下各个控件的设计思路" class="headerlink" title="下面分别解析一下各个控件的设计思路"></a>下面分别解析一下各个控件的设计思路</h3><h1 id="UIImageView-AFNetworking"><a href="#UIImageView-AFNetworking" class="headerlink" title="UIImageView+AFNetworking"></a>UIImageView+AFNetworking</h1><p>为UIImageView加载网络图片提供便利的接口。</p>
+<h1 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h1><p> 功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。</p>
+<p> 下面分别解析一下各个控件的设计思路</p>
+<h1 id="UIImageView-AFNetworking"><a href="#UIImageView-AFNetworking" class="headerlink" title="UIImageView+AFNetworking"></a>UIImageView+AFNetworking</h1><p>为UIImageView加载网络图片提供便利的接口。</p>
+<a id="more"></a>
 <h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- (void)setImageWithURL:(NSURL *)url;</div><div class="line">- (void)setImageWithURL:(NSURL *)url</div><div class="line">       placeholderImage:(nullable UIImage *)placeholderImage;</div><div class="line">- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest</div><div class="line">              placeholderImage:(nullable UIImage *)placeholderImage</div><div class="line">                       success:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse * _Nullable response, UIImage *image))success</div><div class="line">                       failure:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse * _Nullable response, NSError *error))failure;</div></pre></td></tr></table></figure>
 <p>这里为我们抛出了图片下载地址，默认显示图片，成功的回调，失败的回调。</p>
 <p>下面解析下载的核心转换代码：</p>
@@ -583,7 +592,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UIKit"><span class="nav-number">1.</span> <span class="nav-text">UIKit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。"><span class="nav-number">1.1.</span> <span class="nav-text">功能：本部分主要方便UI使用网络功能，为UIImageView，UIButton等设置网络下载图片。功能类似于SDWebImage库。以及UIProgressView，UIWebView，UIRefreshControl，UIActivityIndicatorView部分UI的网络使用封装。</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下面分别解析一下各个控件的设计思路"><span class="nav-number">1.1.1.</span> <span class="nav-text">下面分别解析一下各个控件的设计思路</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UIImageView-AFNetworking"><span class="nav-number">2.</span> <span class="nav-text">UIImageView+AFNetworking</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用方法"><span class="nav-number">2.1.</span> <span class="nav-text">使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#首先会对上次的任务进行检测，如果有的话，取消掉。"><span class="nav-number">2.1.1.</span> <span class="nav-text">首先会对上次的任务进行检测，如果有的话，取消掉。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检测如果本地有缓存，直接获取缓存的图片，返回"><span class="nav-number">2.1.2.</span> <span class="nav-text">检测如果本地有缓存，直接获取缓存的图片，返回</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络下载，并把获取到的图片赋值给当前的ImageView"><span class="nav-number">2.1.3.</span> <span class="nav-text">网络下载，并把获取到的图片赋值给当前的ImageView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AFImageDownloader"><span class="nav-number">2.1.3.1.</span> <span class="nav-text">AFImageDownloader</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UIKit"><span class="nav-number">1.</span> <span class="nav-text">UIKit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UIImageView-AFNetworking"><span class="nav-number">2.</span> <span class="nav-text">UIImageView+AFNetworking</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用方法"><span class="nav-number">2.1.</span> <span class="nav-text">使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#首先会对上次的任务进行检测，如果有的话，取消掉。"><span class="nav-number">2.1.1.</span> <span class="nav-text">首先会对上次的任务进行检测，如果有的话，取消掉。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检测如果本地有缓存，直接获取缓存的图片，返回"><span class="nav-number">2.1.2.</span> <span class="nav-text">检测如果本地有缓存，直接获取缓存的图片，返回</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络下载，并把获取到的图片赋值给当前的ImageView"><span class="nav-number">2.1.3.</span> <span class="nav-text">网络下载，并把获取到的图片赋值给当前的ImageView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AFImageDownloader"><span class="nav-number">2.1.3.1.</span> <span class="nav-text">AFImageDownloader</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
           </div>
         </section>
