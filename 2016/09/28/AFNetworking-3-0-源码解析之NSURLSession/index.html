@@ -94,14 +94,12 @@
 <meta property="og:description" content="NSURLSession是AFNetworking的核心部分，主要负责网络通信部分。
 下面分两个部分来解析： 父类：AFURLSessionManager， 子类：AFHTTPSessionManager
 父类AFURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。子类AFHTTP">
-<meta property="og:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
-<meta property="og:updated_time" content="2016-11-17T07:39:47.000Z">
+<meta property="og:updated_time" content="2016-11-18T06:48:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AFNetworking 3.0 源码解析之NSURLSession">
 <meta name="twitter:description" content="NSURLSession是AFNetworking的核心部分，主要负责网络通信部分。
 下面分两个部分来解析： 父类：AFURLSessionManager， 子类：AFHTTPSessionManager
 父类AFURLSessionManager对系统的NSURLSession类的网络请求进行了封装，并把NSURLSession里面的delegate返回值通过block返回回去。子类AFHTTP">
-<meta name="twitter:image" content="http://chuantu.biz/t5/36/1475134450x3340469572.png">
 
 
 
@@ -405,7 +403,6 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p>封装思路跟上面的基本上是一样的，序列化数据的时候会把body的内容封装在请求body里面：<br> [self.requestsetHTTPBodyStream:self.bodyStream];<br> 相应的这里调用的是AFURLSessionManager中的StreamRequest方法。</p>
 <p>如果文中有什么错误，欢迎指正。</p>
 <p>更多问题讨论欢迎加QQ群：200792066</p>
-<p><img src="http://chuantu.biz/t5/36/1475134450x3340469572.png" alt=""></p>
 <p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
 
       
