@@ -264,6 +264,232 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
             
               
                 
+                <a class="post-title-link" href="/2017/01/08/WebViewJavascriptBridge源码解析/" itemprop="url">
+                  WebViewJavascriptBridge源码解析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-01-08T14:55:50+08:00" content="2017-01-08">
+              2017-01-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS开发</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/01/08/WebViewJavascriptBridge源码解析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/08/WebViewJavascriptBridge源码解析/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2017/01/08/WebViewJavascriptBridge源码解析/" class="leancloud_visitors" data-flag-title="WebViewJavascriptBridge源码解析">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>对于APP开发，一方面需要快速迭代，一方面需要效果好性能优。这样Hybrid模式应运而生。<br>本文主要解析一下WebViewJavascriptBridge这个OC与JS交互框架的封装思路。</p>
+<p>当前版本：v5.0.7</p>
+<h1 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h1><h2 id="OC端"><a href="#OC端" class="headerlink" title="OC端"></a>OC端</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">- (void)setupWVJSBridge &#123;</div><div class="line">    [WebViewJavascriptBridge enableLogging];</div><div class="line">    _bridge = [WebViewJavascriptBridge bridgeForWebView:_webView];</div><div class="line">    [_bridge setWebViewDelegate:self]; // 设置代理，使得self具有捕获webview回调的能力</div><div class="line">        [_bridge registerHandler:@&quot;Hybird&quot; handler:^(id data, WVJBResponseCallback responseCallback) &#123;</div><div class="line">        NSLog(@&quot;data %@ responseCallBack %@&quot;, data, responseCallback);</div><div class="line">        NSDictionary* dicResult = @&#123;@&quot;ret&quot;:@&quot;OK&quot;&#125;; // js 会自动解析json格式</div><div class="line">        responseCallback(dicResult);</div><div class="line">    &#125;];</div><div class="line">    </div><div class="line">    [_bridge callHandler:@&quot;InvokeJavascriptHandler&quot; data:@&#123; @&quot;say&quot;:@&quot;Hello&quot; &#125; responseCallback:^(id responseData) &#123;</div><div class="line">        NSLog(@&quot;OC get call back from js when OC invoke %@&quot;, responseData);</div><div class="line">    &#125;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="JS端"><a href="#JS端" class="headerlink" title="JS端"></a>JS端</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">WebViewJavascriptBridge.registerHandler(&apos;InvokeJavascriptHandler&apos;, function(data, responseCallback) &#123;</div><div class="line">                                                responseCallback(&#123;say : &apos;Hi&apos;&#125;)</div><div class="line">                                                    &#125;)</div><div class="line">                                                    </div><div class="line">function test_Hybird()&#123;</div><div class="line">WebViewJavascriptBridge.callHandler(&apos;Hybird&apos;, &#123;&#125;, function(cb)&#123;</div><div class="line">                                    alert(&apos;js 收到回调 &apos; + cb.ret)</div><div class="line">                                      &#125;)                                        </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当然需要提前注入JS代码。</p>
+<h1 id="WebView提前注入JS"><a href="#WebView提前注入JS" class="headerlink" title="WebView提前注入JS"></a>WebView提前注入JS</h1><p>首先我们知道，OC可以在webView中方便的执行JS代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[webView stringByEvaluatingJavaScriptFromString:@&quot;alert(&apos;Hi&apos;)&quot;];</div></pre></td></tr></table></figure>
+<p>而JS直接调用OC没有提供直接的方法（当然了，iOS7 之后Apple提供了JavaScriptCore框架可以使用，本文不详细介绍），那么我们需要通过触发url重定向功能，在WebView的回调方法中捕获url，然后通过特定的url来执行我们需要的方法。</p>
+<h2 id="提前注入JS的方法"><a href="#提前注入JS的方法" class="headerlink" title="提前注入JS的方法"></a>提前注入JS的方法</h2><p>作者提供的方法是在JS中触发:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">function setupWebViewJavascriptBridge(callback) &#123;</div><div class="line">        if (window.WebViewJavascriptBridge) &#123; return callback(WebViewJavascriptBridge); &#125;</div><div class="line">        if (window.WVJBCallbacks) &#123; return window.WVJBCallbacks.push(callback); &#125;</div><div class="line">        window.WVJBCallbacks = [callback];</div><div class="line">        var WVJBIframe = document.createElement(&apos;iframe&apos;);</div><div class="line">        WVJBIframe.style.display = &apos;none&apos;;</div><div class="line">        WVJBIframe.src = &apos;wvjbscheme://__BRIDGE_LOADED__&apos;;</div><div class="line">        document.documentElement.appendChild(WVJBIframe);</div><div class="line">        setTimeout(function() &#123; document.documentElement.removeChild(WVJBIframe) &#125;, 0)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">setupWebViewJavascriptBridge()</div></pre></td></tr></table></figure>
+<p>前端同学需要在JS代码中，提前写入这段代码，才会有Hybrid交互的能力。</p>
+<p>当然我们OC也可以在手动执行JS注入代码。这里先不讨论。</p>
+<p>当执行上面这段代码的时候，会获取iframe这个属性，通过改变iframe的src来触发UIWebview的回调</p>
+<ul>
+<li>(BOOL)webView:(UIWebView <em>)webView shouldStartLoadWithRequest:(NSURLRequest </em>)request navigationType:(UIWebViewNavigationType)navigationType</li>
+</ul>
+<p>这里注入的回调url是：<br>wvjbscheme://<strong>BRIDGE_LOADED</strong><br>顺便说下执行JS的url是：<br>wvjbscheme://<strong>WVJB_QUEUE_MESSAGE</strong></p>
+<h2 id="UIWebview回调捕获URL处理"><a href="#UIWebview回调捕获URL处理" class="headerlink" title="UIWebview回调捕获URL处理"></a>UIWebview回调捕获URL处理</h2><p>通过UIWebview的代理方法处理URL：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType &#123;</div><div class="line">    if (webView != _webView) &#123; return YES; &#125;</div><div class="line">    NSURL *url = [request URL];</div><div class="line">    __strong WVJB_WEBVIEW_DELEGATE_TYPE* strongDelegate = _webViewDelegate;</div><div class="line">    if ([_base isCorrectProcotocolScheme:url]) &#123; // 判断是不是sheme：wvjbscheme</div><div class="line">        if ([_base isBridgeLoadedURL:url]) &#123; // 判断是不是：wvjbscheme://__BRIDGE_LOADED__</div><div class="line">            [_base injectJavascriptFile]; // 注入js</div><div class="line">        &#125; else if ([_base isQueueMessageURL:url]) &#123; // js注入后，触发新的url重定向 wvjbscheme://__WVJB_QUEUE_MESSAGE__</div><div class="line">            NSString *messageQueueString = [self _evaluateJavascript:[_base webViewJavascriptFetchQueyCommand]]; // 获取js中的缓存队列数组字符串，清空队列</div><div class="line">            [_base flushMessageQueue:messageQueueString]; // 执行js中的缓存队列数组，全部执行完</div><div class="line">        &#125; else &#123;</div><div class="line">            [_base logUnkownMessage:url]; // sheme：wvjbscheme 下其他的url 直接提示出错</div><div class="line">        &#125;</div><div class="line">        return NO; // 只是执行js注入，不会执行加载操作</div><div class="line">    &#125; else if (strongDelegate &amp;&amp; [strongDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) &#123; // 如果设置delegate，则调用代理方法</div><div class="line">        return [strongDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];</div><div class="line">    &#125; else &#123; // 什么也不是正常执行</div><div class="line">        return YES;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里对sheme：wvjbscheme的处理主要是三部分：</p>
+<ul>
+<li>注入JS</li>
+<li>处理消息</li>
+<li>其他错误Log提示</li>
+</ul>
+<p>对其他的sheme，如果设置delegate:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- (void)setWebViewDelegate:(WVJB_WEBVIEW_DELEGATE_TYPE*)webViewDelegate;</div></pre></td></tr></table></figure>
+<p>那么执行设置设置代理的方法。如果没有设置，那么WebView将不执行delegate的回调方法。即使你在UIViewController里面设置webView.delegate = self,也是无济于事的。</p>
+<p>下面分析一下重要的两个分支。</p>
+<h3 id="注入JS方法分支分析"><a href="#注入JS方法分支分析" class="headerlink" title="注入JS方法分支分析"></a>注入JS方法分支分析</h3><p>这里通过isBridgeLoadedURL方法是否是注入的url，是的话执行注入JS代码injectJavascriptFile</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">- (void)injectJavascriptFile &#123;</div><div class="line">    NSString *js = WebViewJavascriptBridge_js();</div><div class="line">    [self _evaluateJavascript:js];</div><div class="line">    if (self.startupMessageQueue) &#123; // 一般是oc开始的注册handler方法</div><div class="line">        NSArray* queue = self.startupMessageQueue;</div><div class="line">        self.startupMessageQueue = nil;</div><div class="line">        for (id queuedMessage in queue) &#123;</div><div class="line">            [self _dispatchMessage:queuedMessage];</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>这里会获取本地写好的JS代码，然后执行，顺便提一句_evaluateJavascript方法就是封装的stringByEvaluatingJavaScriptFromString。</li>
+<li>如果有缓存队列self.startupMessageQueue，执行里面全部的消息，一般是OC提前调用- (void)registerHandler:(NSString *)handlerName handler:(WVJBHandler)handler方法，提前注册JS调用OC的响应方法。</li>
+</ul>
+<p>下面看下执行方法：_dispatchMessage:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">- (void)_dispatchMessage:(WVJBMessage*)message &#123;</div><div class="line">    NSString *messageJSON = [self _serializeMessage:message pretty:NO];</div><div class="line">    [self _log:@&quot;SEND&quot; json:messageJSON];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\\&quot; withString:@&quot;\\\\&quot;];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\&quot;&quot; withString:@&quot;\\\&quot;&quot;];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\&apos;&quot; withString:@&quot;\\\&apos;&quot;];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\n&quot; withString:@&quot;\\n&quot;];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\r&quot; withString:@&quot;\\r&quot;];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\f&quot; withString:@&quot;\\f&quot;];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\u2028&quot; withString:@&quot;\\u2028&quot;];</div><div class="line">    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\u2029&quot; withString:@&quot;\\u2029&quot;];</div><div class="line">    </div><div class="line">    NSString* javascriptCommand = [NSString stringWithFormat:@&quot;WebViewJavascriptBridge._handleMessageFromObjC(&apos;%@&apos;);&quot;, messageJSON];</div><div class="line">    </div><div class="line">    // 需要保证在主线程中执行js代码</div><div class="line">    if ([[NSThread currentThread] isMainThread]) &#123;</div><div class="line">        [self _evaluateJavascript:javascriptCommand];</div><div class="line"></div><div class="line">    &#125; else &#123;</div><div class="line">        dispatch_sync(dispatch_get_main_queue(), ^&#123;</div><div class="line">            [self _evaluateJavascript:javascriptCommand];</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>首先将字典（WVJBMessage）类型数据转换成String</li>
+<li>做一些特殊字符的转换</li>
+<li>调用JS的WebViewJavascriptBridge._handleMessageFromObjC(‘%@’)方法，将消息传进去。</li>
+</ul>
+<p>那么我们看一下JS的_handleMessageFromObjC()方法做了些什么</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">function _handleMessageFromObjC(messageJSON) &#123;</div><div class="line">        _dispatchMessageFromObjC(messageJSON);</div><div class="line">	&#125;</div><div class="line">function _dispatchMessageFromObjC(messageJSON) &#123;</div><div class="line">		if (dispatchMessagesWithTimeoutSafety) &#123;</div><div class="line">			setTimeout(_doDispatchMessageFromObjC);</div><div class="line">		&#125; else &#123;</div><div class="line">			 _doDispatchMessageFromObjC();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		function _doDispatchMessageFromObjC() &#123;</div><div class="line">			var message = JSON.parse(messageJSON);</div><div class="line">			var messageHandler;</div><div class="line">			var responseCallback;</div><div class="line"></div><div class="line">			if (message.responseId) &#123;</div><div class="line">				responseCallback = responseCallbacks[message.responseId];</div><div class="line">				if (!responseCallback) &#123;</div><div class="line">					return;</div><div class="line">				&#125;</div><div class="line">				responseCallback(message.responseData);</div><div class="line">				delete responseCallbacks[message.responseId];</div><div class="line">			&#125; else &#123;</div><div class="line">				if (message.callbackId) &#123;</div><div class="line">					var callbackResponseId = message.callbackId;</div><div class="line">					responseCallback = function(responseData) &#123;</div><div class="line">						_doSend(&#123; handlerName:message.handlerName, responseId:callbackResponseId, responseData:responseData &#125;);</div><div class="line">					&#125;;</div><div class="line">				&#125;</div><div class="line">				</div><div class="line">				var handler = messageHandlers[message.handlerName];</div><div class="line">				if (!handler) &#123;</div><div class="line">					console.log(&quot;WebViewJavascriptBridge: WARNING: no handler for message from ObjC:&quot;, message);</div><div class="line">				&#125; else &#123;</div><div class="line">					handler(message.data, responseCallback);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>首先做Json格式转换</li>
+<li>判断message是否有responseId，有通过responseId执行本地的回调方法。</li>
+<li><p>没有responseId，回调handler方法，将数据，回调方法传回去，本地的callHandler是通过message.handlerName来标示的。<br>如果有callbackId，就是本地支持回调，那么实现一个匿名函数接受回调。<br>在触发responseCallback的时候，会有三个参数：</p>
+<p>1)handlerName：调用的名称<br>2)responseId：这里会把callbackId转变成responseId<br>3)responseData：回调的数据信息</p>
+<p>注意，responseId跟callbackId的区别：</p>
+<ul>
+<li>callbackId: 用来标示回调的id，在触发回调的时候会把callbackId变成responseId</li>
+<li>responseId: 用来执行回调的id</li>
+</ul>
+<p>最后看下这个doSend方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function _doSend(message, responseCallback) &#123;</div><div class="line">	if (responseCallback) &#123;</div><div class="line">		var callbackId = &apos;cb_&apos;+(uniqueId++)+&apos;_&apos;+new Date().getTime();</div><div class="line">		responseCallbacks[callbackId] = responseCallback;</div><div class="line">		message[&apos;callbackId&apos;] = callbackId;</div><div class="line">	&#125;</div><div class="line">	sendMessageQueue.push(message); // 添加message到数组中</div><div class="line">	messagingIframe.src = CUSTOM_PROTOCOL_SCHEME + &apos;://&apos; + QUEUE_HAS_MESSAGE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>这个方法执行消息的发送，如果有回调方法的话，这里会生成一个callbackId，然后存responseCallbacks中，message中新增callbackId的信息。</li>
+<li>添加到sendMessageQueue队列中</li>
+<li>改变iframe的src触发Webview的回调</li>
+</ul>
+<p>这里会触发UIWebview的回调，此时的url为：<br>wvjbscheme://<strong>WVJB_QUEUE_MESSAGE</strong><br>正好走回调的第二个分支，下面分析第二个分支</p>
+<h3 id="执行消息分支分析"><a href="#执行消息分支分析" class="headerlink" title="执行消息分支分析"></a>执行消息分支分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">else if ([_base isQueueMessageURL:url]) &#123; // js注入后，触发新的url重定向 wvjbscheme://__WVJB_QUEUE_MESSAGE__</div><div class="line">            NSString *messageQueueString = [self _evaluateJavascript:[_base webViewJavascriptFetchQueyCommand]]; // 获取js中的缓存队列数组字符串，清空队列</div><div class="line">            [_base flushMessageQueue:messageQueueString]; // 执行js中的缓存队列数组，全部执行完</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面分两部分解析消息的处理</p>
+<p>1） 消息的获取<br>这里会执行JS代码，通过webViewJavascriptFetchQueyCommand方法获取JS的messageQueueString，也就上上面的sendMessageQueue里面的信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-(NSString *)webViewJavascriptFetchQueyCommand &#123;</div><div class="line">    return @&quot;WebViewJavascriptBridge._fetchQueue();&quot;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>JS中_fetchQueue()方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function _fetchQueue() &#123;</div><div class="line">	var messageQueueString = JSON.stringify(sendMessageQueue);</div><div class="line">	sendMessageQueue = [];</div><div class="line">	return messageQueueString;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看出是直接把sendMessageQueue转换成string。</p>
+<p>2） 消息的执行</p>
+<p>执行方法flushMessageQueue：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">- (void)flushMessageQueue:(NSString *)messageQueueString&#123;</div><div class="line">    if (messageQueueString == nil || messageQueueString.length == 0) &#123;</div><div class="line">        NSLog(@&quot;WebViewJavascriptBridge: WARNING: ObjC got nil while fetching the message queue JSON from webview. This can happen if the WebViewJavascriptBridge JS is not currently present in the webview, e.g if the webview just loaded a new page.&quot;);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    id messages = [self _deserializeMessageJSON:messageQueueString];</div><div class="line">    for (WVJBMessage* message in messages) &#123;</div><div class="line">        if (![message isKindOfClass:[WVJBMessage class]]) &#123;</div><div class="line">            NSLog(@&quot;WebViewJavascriptBridge: WARNING: Invalid %@ received: %@&quot;, [message class], message);</div><div class="line">            continue;</div><div class="line">        &#125;</div><div class="line">        [self _log:@&quot;RCVD&quot; json:message];</div><div class="line">        </div><div class="line">        NSString* responseId = message[@&quot;responseId&quot;];</div><div class="line">        if (responseId) &#123;</div><div class="line">            WVJBResponseCallback responseCallback = _responseCallbacks[responseId];</div><div class="line">            responseCallback(message[@&quot;responseData&quot;]);</div><div class="line">            [self.responseCallbacks removeObjectForKey:responseId];</div><div class="line">        &#125; else &#123;</div><div class="line">            WVJBResponseCallback responseCallback = NULL;</div><div class="line">            NSString* callbackId = message[@&quot;callbackId&quot;];</div><div class="line">            if (callbackId) &#123; // 如果接收到js的callbackId，初始化一个block，里面变callbackId为responseId</div><div class="line">                responseCallback = ^(id responseData) &#123;</div><div class="line">                    if (responseData == nil) &#123;</div><div class="line">                        responseData = [NSNull null];</div><div class="line">                    &#125;</div><div class="line">                    </div><div class="line">                    WVJBMessage* msg = @&#123; @&quot;responseId&quot;:callbackId, @&quot;responseData&quot;:responseData &#125;;</div><div class="line">                    [self _queueMessage:msg];</div><div class="line">                &#125;;</div><div class="line">            &#125; else &#123;</div><div class="line">                responseCallback = ^(id ignoreResponseData) &#123;</div><div class="line">                    // Do nothing</div><div class="line">                &#125;;</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">            WVJBHandler handler = self.messageHandlers[message[@&quot;handlerName&quot;]];</div><div class="line">            </div><div class="line">            if (!handler) &#123;</div><div class="line">                NSLog(@&quot;WVJBNoHandlerException, No handler for message from JS: %@&quot;, message);</div><div class="line">                continue;</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">            handler(message[@&quot;data&quot;], responseCallback);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们看到这里思路跟JS里面是相似的。<br>先将消息转换成JSON对象，然后便利所有的消息任务，如果有responseId，执行本地回调，并从self.responseCallbacks中移除执行过的回调方法。如果没有，通过message[@”handlerName”]执行self.messageHandlers中的回调，如果有callbackId，初始化一个responseCallback的block，并传入handler中，接收OC的再回调。</p>
+<h1 id="OC直接call-JS"><a href="#OC直接call-JS" class="headerlink" title="OC直接call JS"></a>OC直接call JS</h1><p>WebViewJavascriptBridge方法中提供方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">typedef void (^WVJBHandler)(id data, WVJBResponseCallback responseCallback);</div><div class="line"></div><div class="line">- (void)callHandler:(NSString*)handlerName;</div><div class="line">- (void)callHandler:(NSString*)handlerName data:(id)data;</div><div class="line">- (void)callHandler:(NSString*)handlerName data:(id)data responseCallback:(WVJBResponseCallback)responseCallback;</div></pre></td></tr></table></figure>
+<p>这里需要提供JS里面的对应的handlerName，然后参数data，最后是响应的回调，提供JS回调的数据，一个responseCallback的Block，可以再回调JS。当然如果你不需要回调，可以置为nil。 </p>
+<p>方法实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">- (void)callHandler:(NSString *)handlerName data:(id)data responseCallback:(WVJBResponseCallback)responseCallback &#123;</div><div class="line">    [_base sendData:data responseCallback:responseCallback handlerName:handlerName];</div><div class="line">&#125;</div><div class="line"></div><div class="line">// WebViewJavascriptBridgeBase中</div><div class="line">- (void)sendData:(id)data responseCallback:(WVJBResponseCallback)responseCallback handlerName:(NSString*)handlerName &#123;</div><div class="line">    NSMutableDictionary* message = [NSMutableDictionary dictionary];</div><div class="line">    </div><div class="line">    if (data) &#123;</div><div class="line">        message[@&quot;data&quot;] = data;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if (responseCallback) &#123;</div><div class="line">        NSString* callbackId = [NSString stringWithFormat:@&quot;objc_cb_%ld&quot;, ++_uniqueId];</div><div class="line">        self.responseCallbacks[callbackId] = [responseCallback copy];</div><div class="line">        message[@&quot;callbackId&quot;] = callbackId;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if (handlerName) &#123;</div><div class="line">        message[@&quot;handlerName&quot;] = handlerName;</div><div class="line">    &#125;</div><div class="line">    [self _queueMessage:message];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>调用的是_base的sendData:方法，这里将参数放入字典message中，并把回调block放到self.responseCallbacks字典中。</p>
+<ul>
+<li>data：存储的数据</li>
+<li>callbackId：标示block在self.responseCallbacks中的位置</li>
+<li>handlerName：交互的名字</li>
+</ul>
+<p>这样就解决了block回调在JS中不兼容的问题，两端分别实现，用callbackId来标示，用responseId来执行。思路不错。</p>
+<p>_queueMessage:执行这条message。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">- (void)_queueMessage:(WVJBMessage*)message &#123;</div><div class="line">    if (self.startupMessageQueue) &#123; // startupMessageQueue：未在webview中注入js之前，缓存之前的交互消息message</div><div class="line">        [self.startupMessageQueue addObject:message];</div><div class="line">    &#125; else &#123;</div><div class="line">        [self _dispatchMessage:message];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>_dispatchMessage: 通过JS调用执行这条message，具体在前面已经解析过了，这里不再赘述。</p>
+<h1 id="OC注册方法，等待JS-call-OC"><a href="#OC注册方法，等待JS-call-OC" class="headerlink" title="OC注册方法，等待JS call OC"></a>OC注册方法，等待JS call OC</h1><p>WebViewJavascriptBridge方法中提供方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- (void)registerHandler:(NSString*)handlerName handler:(WVJBHandler)handler;</div></pre></td></tr></table></figure>
+<p>方法实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (void)registerHandler:(NSString *)handlerName handler:(WVJBHandler)handler &#123;</div><div class="line">    _base.messageHandlers[handlerName] = [handler copy];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很简单，只是将hander放到_base（WebViewJavascriptBridgeBase的一个实例对象）的messageHandlers字典中，标示的key为handlerName。</p>
+<p>这就结束了，然后等待是JS的调用触发，即：iframe.src设置触发UIWebView的Delegate回调。上面解析注入JS的时候解析过，这里不详细展开。</p>
+<p>如果文中有什么错误，欢迎大家指正。</p>
+<p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/11/15/AFNetworking-3-0-源码解析之UIKit/" itemprop="url">
                   AFNetworking-3-0-源码解析之UIKit
                 </a>
@@ -964,7 +1190,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-count">6</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -981,7 +1207,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
