@@ -92,7 +92,7 @@ CocoaPods 私有库制作方式一1. 新建私有git库可以gitlab，也可以g
 <meta property="og:site_name" content="Semyon Xu's Blog">
 <meta property="og:description" content="iOS中如果涉及到多个APP的同时开发，那么有些公共的代码可能需要有个统一的修改的地方，那么组件化功能就势在必行。CocoaPods的使用，我们一般使用pod库里面的公共框架，比如AFNetworking，但是我们不希望我们业务相关的代码提供给别人，这里讨论一下使用CocoaPods来制作私有库。
 CocoaPods 私有库制作方式一1. 新建私有git库可以gitlab，也可以github，当然">
-<meta property="og:updated_time" content="2017-02-27T10:01:54.000Z">
+<meta property="og:updated_time" content="2017-02-27T10:11:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="组件化开发之CocoaPods私有库制作">
 <meta name="twitter:description" content="iOS中如果涉及到多个APP的同时开发，那么有些公共的代码可能需要有个统一的修改的地方，那么组件化功能就势在必行。CocoaPods的使用，我们一般使用pod库里面的公共框架，比如AFNetworking，但是我们不希望我们业务相关的代码提供给别人，这里讨论一下使用CocoaPods来制作私有库。
@@ -347,8 +347,9 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <h1 id="CocoaPods-私有库制作方式一"><a href="#CocoaPods-私有库制作方式一" class="headerlink" title="CocoaPods 私有库制作方式一"></a>CocoaPods 私有库制作方式一</h1><h2 id="1-新建私有git库"><a href="#1-新建私有git库" class="headerlink" title="1. 新建私有git库"></a>1. 新建私有git库</h2><p>可以gitlab，也可以github，当然github是公共的，私有的得交费。</p>
 <h2 id="2-创建工程"><a href="#2-创建工程" class="headerlink" title="2. 创建工程"></a>2. 创建工程</h2><p>可以使用pod命令来自动创建，命令：</p>
 <blockquote>
-<p>pod lib create TestKit<br>中间会有很多配置，根据自己的需求配置即可。</p>
+<p>pod lib create TestKit</p>
 </blockquote>
+<p>中间会有很多配置，根据自己的需求配置即可。</p>
 <p>如果想自动创建工程，那么需要将你的代码放到一个文件夹下，自己制作.podspec文件即可。</p>
 <blockquote>
 <p>pod spec cretae TestKit</p>
@@ -357,8 +358,14 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <a id="more"></a>
 <h2 id="3-添加私有库到本地pod库："><a href="#3-添加私有库到本地pod库：" class="headerlink" title="3. 添加私有库到本地pod库："></a>3. 添加私有库到本地pod库：</h2><p>命令：</p>
 <blockquote>
-<p>pod repo add TestKit git@git.xxxx.git<br>git@git.xxxx.git: 远端库的地址<br>成功之后，我们可以查看一下：<br>cd ~./cocoapods/repos<br>open .<br>这里除了master之外，新增了一个TestKit文件夹</p>
+<p>pod repo add TestKit git@git.xxxx.git</p>
 </blockquote>
+<p>git@git.xxxx.git: 远端库的地址</p>
+<p>成功之后，我们可以查看一下：</p>
+<blockquote>
+<p>cd ~./cocoapods/repos<br>open .</p>
+</blockquote>
+<p>这里除了master之外，新增了一个TestKit文件夹</p>
 <h2 id="4-开发代码，提交git，并打tag"><a href="#4-开发代码，提交git，并打tag" class="headerlink" title="4. 开发代码，提交git，并打tag"></a>4. 开发代码，提交git，并打tag</h2><p>开发完代码之后，修改一下.podspec 文件，然后提交git代码，并打tag<br>注意：这里.podspec 中的version必须跟git所打tag版本一致</p>
 <blockquote>
 <p>git add –all<br>git commit -m “update podspec”<br>git push origin master<br>git tag 0.0.1<br>git push –tags</p>
@@ -366,7 +373,11 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p>如果不确定podspec有么有问题，可用先执行【5】pod检测，再打tag</p>
 <h2 id="5-检测一下pod库是否可用"><a href="#5-检测一下pod库是否可用" class="headerlink" title="5. 检测一下pod库是否可用"></a>5. 检测一下pod库是否可用</h2><p>命令：</p>
 <blockquote>
-<p>pod lib lint<br>如果有警告可以使用命令忽略：<br>pod lib lint –allow-warnings</p>
+<p>pod lib lint</p>
+</blockquote>
+<p>如果有警告可以使用命令忽略：</p>
+<blockquote>
+<p>pod lib lint –allow-warnings</p>
 </blockquote>
 <p>如果有问题，那么一般是podspec配置问题。</p>
 <p>成功提示：</p>
@@ -375,8 +386,17 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 </blockquote>
 <h2 id="6-本地测试库是否可用"><a href="#6-本地测试库是否可用" class="headerlink" title="6.本地测试库是否可用"></a>6.本地测试库是否可用</h2><p>新建工程</p>
 <blockquote>
-<p>pod init<br>修改podfile文件, 并添加上本地库路径<br>pod ‘TestKit’, :path =&gt; ‘/Users/xxx/Documents/TestKit’<br>拉取pod代码<br>pod install<br>成功后，可用看到我们的库并没有在pods里面，而是在Development Pods里面，可用先检测代码有没有问题。</p>
+<p>pod init </p>
 </blockquote>
+<p>修改podfile文件, 并添加上本地库路径</p>
+<blockquote>
+<p>pod ‘TestKit’, :path =&gt; ‘/Users/xxx/Documents/TestKit’</p>
+</blockquote>
+<p>拉取pod代码</p>
+<blockquote>
+<p>pod install</p>
+</blockquote>
+<p>成功后，可用看到我们的库并没有在pods里面，而是在Development Pods里面，可用先检测代码有没有问题。</p>
 <h2 id="7-提交本地库，向Spec-Repo提交podspec"><a href="#7-提交本地库，向Spec-Repo提交podspec" class="headerlink" title="7.提交本地库，向Spec Repo提交podspec"></a>7.提交本地库，向Spec Repo提交podspec</h2><p>命令：</p>
 <blockquote>
 <p>pod repo push TestKit TestKit.podspec</p>
@@ -396,8 +416,9 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 </blockquote>
 <p>如果还是报错：<br>[!] An unexpected version directory <code>Assets</code> was encountered for the <code>/Users/xxx/.cocoapods/repos/TestKit</code> Pod in the <code>TestKit</code> repository.<br>修改podfile文件：</p>
 <blockquote>
-<p>pod ‘TestKit’, :git =&gt; ‘<a href="https://xxx/TestKit.git" target="_blank" rel="external">https://xxx/TestKit.git</a>‘<br>此处git是你远端git库的地址，如果git@git.xxxx.git不可以，换成https的地址即可。</p>
+<p>pod ‘TestKit’, :git =&gt; ‘<a href="https://xxx/TestKit.git" target="_blank" rel="external">https://xxx/TestKit.git</a>‘</p>
 </blockquote>
+<p>此处git是你远端git库的地址，如果git@git.xxxx.git不可以，换成https的地址即可。</p>
 <h1 id="CocoaPods-私有库制作方式二"><a href="#CocoaPods-私有库制作方式二" class="headerlink" title="CocoaPods 私有库制作方式二"></a>CocoaPods 私有库制作方式二</h1><p>此方式是使用公共库的制作方式，将代码以framework的形式呈现，那么源码也是别人无法看到的。这种方式需要维护两个git库，一个是源码库，一个是framework库。维护相对来说麻烦一些，但是制作的跟公共库一样，使用方便。</p>
 <h2 id="1-新建git私有库"><a href="#1-新建git私有库" class="headerlink" title="1. 新建git私有库"></a>1. 新建git私有库</h2><p>新建一个git库工程</p>
 <h2 id="2-创建工程-1"><a href="#2-创建工程-1" class="headerlink" title="2. 创建工程"></a>2. 创建工程</h2><p>创建的方式跟法【一】的一样</p>
@@ -413,12 +434,17 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 </blockquote>
 <p>如果没有的话，安装一下：</p>
 <blockquote>
-<p>sudo gem install cocoapods-packager<br>如果报错，没有权限,新系统修改一下<br>sudo gem install -n /usr/local/bin cocoapods-packager</p>
+<p>sudo gem install cocoapods-packager</p>
+</blockquote>
+<p>如果报错，没有权限,新系统修改一下</p>
+<blockquote>
+<p>sudo gem install -n /usr/local/bin cocoapods-packager</p>
 </blockquote>
 <p>使用打包命令：</p>
 <blockquote>
-<p>pod package TestKit.podspec –force<br>此处–force是强制覆盖的意思</p>
+<p>pod package TestKit.podspec –force</p>
 </blockquote>
+<p>此处–force是强制覆盖的意思</p>
 <p>如果你想把framework放到其他目录下,切换到你想存的目录下, 把TestKit.podspec路径补充完全即可</p>
 <blockquote>
 <p>cd xxx<br>pod package xxx/xxx/TestKit.podspec –force</p>
@@ -432,7 +458,11 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <h2 id="8-上传pod官方库"><a href="#8-上传pod官方库" class="headerlink" title="8. 上传pod官方库"></a>8. 上传pod官方库</h2><p>使用cocoapods-trunk工具</p>
 <p>如果没有的话，安装一下：</p>
 <blockquote>
-<p>sudo gem install cocoapods-trunk<br>如果报错，没有权限,新系统修改一下<br>sudo gem install -n /usr/local/bin cocoapods-trunk</p>
+<p>sudo gem install cocoapods-trunk</p>
+</blockquote>
+<p>如果报错，没有权限,新系统修改一下</p>
+<blockquote>
+<p>sudo gem install -n /usr/local/bin cocoapods-trunk</p>
 </blockquote>
 <p>发布podspec：</p>
 <blockquote>
