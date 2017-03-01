@@ -92,7 +92,7 @@ CocoaPods 私有库制作方式一1. 新建私有git库可以gitlab，也可以g
 <meta property="og:site_name" content="Semyon Xu's Blog">
 <meta property="og:description" content="iOS中如果涉及到多个APP的同时开发，那么有些公共的代码可能需要有个统一的修改的地方，那么组件化功能就势在必行。CocoaPods的使用，我们一般使用pod库里面的公共框架，比如AFNetworking，但是我们不希望我们业务相关的代码提供给别人，这里讨论一下使用CocoaPods来制作私有库。
 CocoaPods 私有库制作方式一1. 新建私有git库可以gitlab，也可以github，当然">
-<meta property="og:updated_time" content="2017-02-27T10:11:40.000Z">
+<meta property="og:updated_time" content="2017-03-01T10:20:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="组件化开发之CocoaPods私有库制作">
 <meta name="twitter:description" content="iOS中如果涉及到多个APP的同时开发，那么有些公共的代码可能需要有个统一的修改的地方，那么组件化功能就势在必行。CocoaPods的使用，我们一般使用pod库里面的公共框架，比如AFNetworking，但是我们不希望我们业务相关的代码提供给别人，这里讨论一下使用CocoaPods来制作私有库。
@@ -363,7 +363,7 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 <p>git@git.xxxx.git: 远端库的地址</p>
 <p>成功之后，我们可以查看一下：</p>
 <blockquote>
-<p>cd ~./cocoapods/repos<br>open .</p>
+<p>cd ~/.cocoapods/repos<br>open .</p>
 </blockquote>
 <p>这里除了master之外，新增了一个TestKit文件夹</p>
 <h2 id="4-开发代码，提交git，并打tag"><a href="#4-开发代码，提交git，并打tag" class="headerlink" title="4. 开发代码，提交git，并打tag"></a>4. 开发代码，提交git，并打tag</h2><p>开发完代码之后，修改一下.podspec 文件，然后提交git代码，并打tag<br>注意：这里.podspec 中的version必须跟git所打tag版本一致</p>

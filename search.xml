@@ -26,7 +26,7 @@
 <p>git@git.xxxx.git: 远端库的地址</p>
 <p>成功之后，我们可以查看一下：</p>
 <blockquote>
-<p>cd ~./cocoapods/repos<br>open .</p>
+<p>cd ~/.cocoapods/repos<br>open .</p>
 </blockquote>
 <p>这里除了master之外，新增了一个TestKit文件夹</p>
 <h2 id="4-开发代码，提交git，并打tag"><a href="#4-开发代码，提交git，并打tag" class="headerlink" title="4. 开发代码，提交git，并打tag"></a>4. 开发代码，提交git，并打tag</h2><p>开发完代码之后，修改一下.podspec 文件，然后提交git代码，并打tag<br>注意：这里.podspec 中的version必须跟git所打tag版本一致</p>
