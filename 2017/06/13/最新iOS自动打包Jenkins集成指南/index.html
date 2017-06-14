@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Jenkins,iOS自动打包," />
 
 
 
@@ -84,13 +84,22 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="search">
-<meta property="og:url" content="http://semyonxu.com/search/index.html">
+<meta name="description" content="Jenkins部署Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。
+搭建详细过程参考：http://www.cocoachina.com/ios/20160804/17281.html
+准备工作对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最新iOS自动打包Jenkins集成指南">
+<meta property="og:url" content="http://semyonxu.com/2017/06/13/最新iOS自动打包Jenkins集成指南/index.html">
 <meta property="og:site_name" content="Semyon Xu's Blog">
-<meta property="og:updated_time" content="2016-09-30T06:51:29.000Z">
+<meta property="og:description" content="Jenkins部署Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。
+搭建详细过程参考：http://www.cocoachina.com/ios/20160804/17281.html
+准备工作对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac">
+<meta property="og:updated_time" content="2017-06-14T02:15:13.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="search">
+<meta name="twitter:title" content="最新iOS自动打包Jenkins集成指南">
+<meta name="twitter:description" content="Jenkins部署Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。
+搭建详细过程参考：http://www.cocoachina.com/ios/20160804/17281.html
+准备工作对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac">
 
 
 
@@ -111,15 +120,9 @@
 
 
 
-  <link rel="canonical" href="http://semyonxu.com/search/"/>
+  <link rel="canonical" href="http://semyonxu.com/2017/06/13/最新iOS自动打包Jenkins集成指南/"/>
 
-  <title>
-  
-
-  
-    search | Semyon Xu's Blog
-  
-</title>
+  <title> 最新iOS自动打包Jenkins集成指南 | Semyon Xu's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -140,7 +143,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left  ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -249,9 +252,211 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 
   <div id="posts" class="posts-expand">
     
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
     
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                最新iOS自动打包Jenkins集成指南
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-06-13T20:15:22+08:00" content="2017-06-13">
+              2017-06-13
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS自动打包/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS自动打包</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/06/13/最新iOS自动打包Jenkins集成指南/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/06/13/最新iOS自动打包Jenkins集成指南/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2017/06/13/最新iOS自动打包Jenkins集成指南/" class="leancloud_visitors" data-flag-title="最新iOS自动打包Jenkins集成指南">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
       
-    
+      
+
+      
+        <h1 id="Jenkins部署"><a href="#Jenkins部署" class="headerlink" title="Jenkins部署"></a>Jenkins部署</h1><p>Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。</p>
+<p>搭建详细过程参考：<br><a href="http://www.cocoachina.com/ios/20160804/17281.html" target="_blank" rel="external">http://www.cocoachina.com/ios/20160804/17281.html</a></p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac，才能集成。</p>
+<h2 id="开始搭建工程"><a href="#开始搭建工程" class="headerlink" title="开始搭建工程"></a>开始搭建工程</h2><p>我们可以通过新建，输入工程的名字，来新建一个工程。</p>
+<p>在这里，如果安卓已经搭建了一个非Mac的服务器，而我们又使用不了，那么我们可以通过添加结点的方式，来链接一个专门打包的Mac。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">系统管理-&gt;管理结点-&gt;新建结点</div></pre></td></tr></table></figure>
+<p>这里可以参考这篇文章<br><a href="http://www.qingpingshan.com/pc/fwq/128432.html" target="_blank" rel="external">http://www.qingpingshan.com/pc/fwq/128432.html</a></p>
+<p>中间如果遇到：<br>执行命令的slave.jar的时候报错，那么升级一下java版本到java8即可解决。</p>
+<p>可以去官网下载，JDK。<br>也可以使用brew命令下载：<br>终端输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install java</div></pre></td></tr></table></figure>
+<p>链接成功，就可以了。</p>
+<p>需要在工程中配置当前电脑：<br>源码管理选项下找到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Restrict where this project can be run</div><div class="line">Label Expression &apos;填写配置好的Mac名字&apos;</div></pre></td></tr></table></figure>
+<h2 id="打包命令"><a href="#打包命令" class="headerlink" title="打包命令"></a>打包命令</h2><p>Jenkins支持使用Xcode插件（Xcode integration）打包，但是不方便切换证书，所以推荐使用命令的方式。</p>
+<p>配置好各种证书，profile之后，使用命令打包。注意xcode8之后的命令变化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xcodebuild  -exportArchive -archivePath /Users/xxx/Documents/work/xxx -exportPath /Users/xxx/Desktop/xxx/xxx.ipa -exportOptionsPlist xxx/IPA.plist</div></pre></td></tr></table></figure>
+<p>此处打包信息需要在IPA.plist 中填写。对于plist内容格式，我们可以通过以下命令查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xcodebuild --help</div></pre></td></tr></table></figure>
+<p>这里注意贴两个主要的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">method : String</div><div class="line"></div><div class="line">	Describes how Xcode should export the archive. Available options: app-store, ad-hoc, package, enterprise, development, and developer-id. The list of options varies based on the type of archive. Defaults to development.</div><div class="line"></div><div class="line">teamID : String</div><div class="line"></div><div class="line">	The Developer Portal team to use for this export. Defaults to the team used to build the archive.</div></pre></td></tr></table></figure>
+<ul>
+<li>method：打包类型，企业版、ad-Hoc版、上架appstore版</li>
+<li>teamID：证书对应的teamID，可以去钥匙串中查看。</li>
+</ul>
+<p>我们通过key，value的形式填入自己生成的plist文件中。</p>
+<p>参考链接：<br><a href="https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/xcodebuild.1.html" target="_blank" rel="external">https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/xcodebuild.1.html</a></p>
+<p><a href="https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/xcrun.1.html" target="_blank" rel="external">https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/xcrun.1.html</a></p>
+<h2 id="开始打包"><a href="#开始打包" class="headerlink" title="开始打包"></a>开始打包</h2><p>一切都部署成功的情况下，开始构建，结果发现如下错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">:unknown error -1=ffffffffffffffff</div><div class="line"> Command /usr/bin/codesign failed with exit code 1</div></pre></td></tr></table></figure>
+<p>可能是你的钥匙串的访问权限问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">获取keychain权限，解锁keychain，执行以下命令：</div><div class="line">security -v unlock-keychain -p password ~/Library/Keychains/login.keychain </div><div class="line">// password为电脑的密码</div></pre></td></tr></table></figure>
+<p>如果这个命令还是有错误，那么需要手动修改一下证书的访问权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">设置钥匙串证书秘钥的访问权限：</div><div class="line">找到对应证书-&gt;</div><div class="line">点击最左边箭头展开秘钥-&gt;</div><div class="line">右击显示简介-&gt;</div><div class="line">点击访问控制-&gt;</div><div class="line">选择【允许所有应用程序访问此项目】-&gt; </div><div class="line">存储更改</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Jenkins/" rel="tag">#Jenkins</a>
+          
+            <a href="/tags/iOS自动打包/" rel="tag">#iOS自动打包</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/27/组件化开发之CocoaPods私有库制作/" rel="next" title="组件化开发之CocoaPods私有库制作">
+                <i class="fa fa-chevron-left"></i> 组件化开发之CocoaPods私有库制作
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_cqq"></a>
+  <a class="jiathis_button_douban"></a>
+  <a class="jiathis_button_renren"></a>
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_kaixin001"></a>
+  <a class="jiathis_button_copy"></a>
+  <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+  var jiathis_config={
+    hideMore:false
+  }
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+      
+    </div>
   </div>
 
 
@@ -262,8 +467,8 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="search/index.html"
-           data-title="search" data-url="http://semyonxu.com/search/index.html">
+      <div class="ds-thread" data-thread-key="2017/06/13/最新iOS自动打包Jenkins集成指南/"
+           data-title="最新iOS自动打包Jenkins集成指南" data-url="http://semyonxu.com/2017/06/13/最新iOS自动打包Jenkins集成指南/">
       </div>
     
   </div>
@@ -287,8 +492,17 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/weixinicon.jpg"
@@ -372,6 +586,17 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Jenkins部署"><span class="nav-number">1.</span> <span class="nav-text">Jenkins部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">1.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始搭建工程"><span class="nav-number">1.2.</span> <span class="nav-text">开始搭建工程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打包命令"><span class="nav-number">1.3.</span> <span class="nav-text">打包命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始打包"><span class="nav-number">1.4.</span> <span class="nav-text">开始打包</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -468,6 +693,10 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
