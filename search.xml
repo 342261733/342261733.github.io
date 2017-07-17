@@ -180,8 +180,9 @@
 <hr>
 <p>如果文中有什么错误，欢迎大家指正。</p>
 <p>转载请注明出处：<a href="http://semyonxu.com">http://semyonxu.com</a></p>
+<p>代码注释Demo见：<br><a href="https://github.com/342261733/JSPatchAnalysis" target="_blank" rel="external">https://github.com/342261733/JSPatchAnalysis</a></p>
 <p>typeDescription类型的含义可以参考苹果文档：<br><a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100-SW1" target="_blank" rel="external">https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100-SW1</a></p>
-<p>参考作者文档：<br><a href="https://github.com/bang590/JSPatch/wiki/JSPatch-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3" target="_blank" rel="external">https://github.com/bang590/JSPatch/wiki/JSPatch-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3</a></p>
+<p>参考JSPatch作者文档：<br><a href="https://github.com/bang590/JSPatch/wiki/JSPatch-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3" target="_blank" rel="external">https://github.com/bang590/JSPatch/wiki/JSPatch-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3</a></p>
 ]]></content>
     </entry>
     
