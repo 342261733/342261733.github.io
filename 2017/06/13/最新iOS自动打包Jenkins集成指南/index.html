@@ -86,20 +86,26 @@
 
 <meta name="description" content="Jenkins部署Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。
 搭建详细过程参考：http://www.cocoachina.com/ios/20160804/17281.html
-准备工作对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac">
+建议不适用安装包的方式，因为安装包的方式会导致很多权限问题，解决起来很酸爽。建议使用命令的方式安装：
+下载 jenkins.war执行：
+1Ja">
 <meta property="og:type" content="article">
 <meta property="og:title" content="最新iOS自动打包Jenkins集成指南">
 <meta property="og:url" content="http://semyonxu.com/2017/06/13/最新iOS自动打包Jenkins集成指南/index.html">
 <meta property="og:site_name" content="Semyon Xu's Blog">
 <meta property="og:description" content="Jenkins部署Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。
 搭建详细过程参考：http://www.cocoachina.com/ios/20160804/17281.html
-准备工作对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac">
-<meta property="og:updated_time" content="2017-06-14T02:17:05.000Z">
+建议不适用安装包的方式，因为安装包的方式会导致很多权限问题，解决起来很酸爽。建议使用命令的方式安装：
+下载 jenkins.war执行：
+1Ja">
+<meta property="og:updated_time" content="2017-08-02T03:56:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="最新iOS自动打包Jenkins集成指南">
 <meta name="twitter:description" content="Jenkins部署Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。
 搭建详细过程参考：http://www.cocoachina.com/ios/20160804/17281.html
-准备工作对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac">
+建议不适用安装包的方式，因为安装包的方式会导致很多权限问题，解决起来很酸爽。建议使用命令的方式安装：
+下载 jenkins.war执行：
+1Ja">
 
 
 
@@ -348,8 +354,16 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
       
         <h1 id="Jenkins部署"><a href="#Jenkins部署" class="headerlink" title="Jenkins部署"></a>Jenkins部署</h1><p>Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。</p>
 <p>搭建详细过程参考：<br><a href="http://www.cocoachina.com/ios/20160804/17281.html" target="_blank" rel="external">http://www.cocoachina.com/ios/20160804/17281.html</a></p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac，才能集成。</p>
+<p>建议不适用安装包的方式，因为安装包的方式会导致很多权限问题，解决起来很酸爽。<br>建议使用命令的方式安装：</p>
+<p>下载 jenkins.war<br>执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Java -jar jenkins.war</div></pre></td></tr></table></figure>
+<p>中间如果重复安装可能遇到的问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Caused by: java.net.BindException: Address already in use</div></pre></td></tr></table></figure>
 <a id="more"></a>
+<p>解决：<br>将占用端口的进程杀死掉。<br>执行下面命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">lsof -i:8080  // 查看端口号的占用进程，并找到进程的PID：47426，</div><div class="line">kill 47426 // 杀掉这个进程</div></pre></td></tr></table></figure>
+<p>还是不行？<br>重启下Mac</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac，才能集成。</p>
 <h2 id="开始搭建工程"><a href="#开始搭建工程" class="headerlink" title="开始搭建工程"></a>开始搭建工程</h2><p>我们可以通过新建，输入工程的名字，来新建一个工程。</p>
 <p>在这里，如果安卓已经搭建了一个非Mac的服务器，而我们又使用不了，那么我们可以通过添加结点的方式，来链接一个专门打包的Mac。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">系统管理-&gt;管理结点-&gt;新建结点</div></pre></td></tr></table></figure>

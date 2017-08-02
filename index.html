@@ -478,7 +478,11 @@ _st('install','NBYf-PmjcBGggqmiGd4V','2.0.0');
         
           <h1 id="Jenkins部署"><a href="#Jenkins部署" class="headerlink" title="Jenkins部署"></a>Jenkins部署</h1><p>Jenkins 搭建过程本文不在讨论，很多文章都已经讲得很详细。本文主要讲一下，部署过程中可能遇到的坑，以及解决方法。</p>
 <p>搭建详细过程参考：<br><a href="http://www.cocoachina.com/ios/20160804/17281.html">http://www.cocoachina.com/ios/20160804/17281.html</a></p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>对于iOS开发来说，Jenkins各种插件支持，也是很贴心，但是没有办法在非Mac机器上使用xcode打包命令，也就是必须准备一台Mac，才能集成。</p>
+<p>建议不适用安装包的方式，因为安装包的方式会导致很多权限问题，解决起来很酸爽。<br>建议使用命令的方式安装：</p>
+<p>下载 jenkins.war<br>执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Java -jar jenkins.war</div></pre></td></tr></table></figure>
+<p>中间如果重复安装可能遇到的问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Caused by: java.net.BindException: Address already in use</div></pre></td></tr></table></figure>
           <div class="post-more-link text-center">
             <a class="btn" href="/2017/06/13/最新iOS自动打包Jenkins集成指南/#more" rel="contents">
               阅读全文 &raquo;
